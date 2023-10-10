@@ -66,6 +66,15 @@ public class TransportService {
         return repository.findAll(transportType.name(), page.getStart(), page.getCount());
     }
 
+    public List<Transport> getAllAvailable(Double latitude, Double longitude,
+                                           Double radius, TransportType type
+    ) {
+        return repository.getAvailable(
+                latitude, longitude,
+                radius, type.name()
+        );
+    }
+
     private boolean isOwner(Account account, Transport transport) {
         return Objects.equals(account.getId(), transport.getOwner().getId());
     }

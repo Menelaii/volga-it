@@ -1,8 +1,11 @@
 package com.example.volgaitzhezha.controllers;
 
 import com.example.volgaitzhezha.enums.RentType;
+import com.example.volgaitzhezha.enums.TransportType;
 import com.example.volgaitzhezha.models.dtos.RentDTO;
+import com.example.volgaitzhezha.models.dtos.TransportDTO;
 import com.example.volgaitzhezha.services.RentService;
+import com.example.volgaitzhezha.services.TransportService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -15,20 +18,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RentController {
     private final RentService service;
+    private final TransportService transportService;
     private final ModelMapper modelMapper;
 
     @GetMapping("/Transport")
-    public ResponseEntity<Void> getAll() {
-//        GET /api/Rent/Transport
-//        описание: Получение транспорта доступного для аренды по параметрам
-//        параметры:
-//        lat: double //Географическая широта центра круга поиска транспорта
-//        long: double //Географическая долгота центра круга поиска транспорта
-//        radius: double //Радиус круга поиска транспорта
-//        type: “string” //Тип транспорта [Car, Bike, Scooter, All]
-//        ограничения: нет
+    public ResponseEntity<List<TransportDTO>> getAllAvailable(Double latitude,
+                                                              Double longitude,
+                                                              Double radius,
+                                                              TransportType type
+    ) {
+        List<TransportDTO> body = transportService.getAllAvailable(latitude, longitude, radius, type)
+                        .stream()
+                        .map(t -> modelMapper.map(t, TransportDTO.class))
+                        .toList();
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(body);
     }
 
     @GetMapping("/Transport")

@@ -14,8 +14,10 @@ public interface AccountsRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByUsername(String username);
 
     @Query(value = "SELECT * FROM account OFFSET :start LIMIT :count", nativeQuery = true)
-    List<Account> findAll(@Param("start") Integer start, @Param("count") Integer count);
+    List<Account> findAll(@Param("start") Integer start,
+                          @Param("count") Integer count);
 
     @Query(value = "UPDATE account SET balance = balance + :amount WHERE id = :accountId ", nativeQuery = true)
-    void deposit(Long accountId, Double amount);
+    void deposit(@Param("accountId") Long accountId,
+                 @Param("amount") Double amount);
 }
