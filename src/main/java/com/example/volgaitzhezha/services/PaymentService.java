@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class PaymentService {
     @Transactional
     public void deposit(Long accountId, Double amount) {
         Account current = service.getAuthenticated();
-        if (!current.isAdmin() && (current.getId() != accountId)) {
+        if (!current.isAdmin() && (!Objects.equals(current.getId(), accountId))) {
             throw new IllegalStateException("Пользователь может пополнить баланс только самому себе");
         }
 
