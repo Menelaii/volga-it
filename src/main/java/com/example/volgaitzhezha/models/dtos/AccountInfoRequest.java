@@ -5,7 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AccountViewDTO {
+public class AccountInfoRequest {
     private Long id;
     private String username;
+    private Boolean isAdmin;
+    private Double balance;
 }

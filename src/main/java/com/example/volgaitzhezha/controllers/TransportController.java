@@ -1,13 +1,13 @@
 package com.example.volgaitzhezha.controllers;
 
-import com.example.volgaitzhezha.models.dtos.TransportDTO;
+import com.example.volgaitzhezha.models.dtos.TransportRequest;
 import com.example.volgaitzhezha.models.entities.Transport;
 import com.example.volgaitzhezha.services.TransportService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-//todo owner
 @RestController
 @RequestMapping("/api/Transport")
 @RequiredArgsConstructor
@@ -16,33 +16,34 @@ public class TransportController {
     private final ModelMapper modelMapper;
 
     @GetMapping("/{id}")
-    public TransportDTO getTransportById(@PathVariable Long id) {
+    public ResponseEntity<TransportRequest> getTransportById(@PathVariable Long id) {
         Transport transport = transportService.getById(id);
-        return convertToDTO(transport);
+        return ResponseEntity.ok(convertToDTO(transport));
     }
 
     @PostMapping
-    public TransportDTO addTransport(@RequestBody TransportDTO request) {
+    public ResponseEntity<TransportRequest> addTransport(@RequestBody TransportRequest request) {
         Transport transport = convertToEntity(request);
-        return convertToDTO(transportService.add(transport));
+        return ResponseEntity.ok(convertToDTO(transportService.add(transport, null)));
     }
 
     @PutMapping("/{id}")
-    public TransportDTO updateTransport(@PathVariable Long id, @RequestBody TransportDTO request) {
+    public ResponseEntity<TransportRequest> updateTransport(@PathVariable Long id, @RequestBody TransportRequest request) {
         Transport transport = convertToEntity(request);
-        return convertToDTO(transportService.update(id, transport));
+        return ResponseEntity.ok(convertToDTO(transportService.update(id, transport)));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTransport(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTransport(@PathVariable Long id) {
         transportService.delete(id);
+        return ResponseEntity.ok().build();
     }
 
-    private TransportDTO convertToDTO(Transport transport) {
-        return modelMapper.map(transport, TransportDTO.class);
+    private TransportRequest convertToDTO(Transport transport) {
+        return modelMapper.map(transport, TransportRequest.class);
     }
 
-    private Transport convertToEntity(TransportDTO transportDTO) {
-        return modelMapper.map(transportDTO, Transport.class);
+    private Transport convertToEntity(TransportRequest transportRequest) {
+        return modelMapper.map(transportRequest, Transport.class);
     }
 }

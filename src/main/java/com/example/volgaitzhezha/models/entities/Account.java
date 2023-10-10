@@ -1,11 +1,12 @@
 package com.example.volgaitzhezha.models.entities;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import static com.example.volgaitzhezha.utils.Constants.ADMIN_ROLE;
 
 @Entity
 @Getter
@@ -16,8 +17,10 @@ public class Account extends AbstractEntity {
     private String username;
     private String password;
     private String role;
-    private boolean isLocked;
+    private Double balance;
+    private Boolean isLocked;
 
-    @Transient
-    private boolean isAdmin;
+    public boolean isAdmin() {
+        return ADMIN_ROLE.equals(role);
+    }
 }

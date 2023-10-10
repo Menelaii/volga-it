@@ -1,6 +1,7 @@
 package com.example.volgaitzhezha.security;
 
 import com.example.volgaitzhezha.models.entities.Account;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @RequiredArgsConstructor
+@Getter
 public class UserDetailsImpl implements UserDetails {
     private final Account account;
 
@@ -35,7 +37,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !account.isLocked();
+        return !account.getIsLocked();
     }
 
     @Override

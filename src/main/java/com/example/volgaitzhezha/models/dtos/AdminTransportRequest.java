@@ -1,10 +1,11 @@
 package com.example.volgaitzhezha.models.dtos;
 
-import com.example.volgaitzhezha.enums.TransportModel;
+import com.example.volgaitzhezha.enums.TransportType;
 
-public record TransportDTO(
+public record AdminTransportRequest(
+        Long ownerId,
         Boolean canBeRented,
-        TransportModel transportType,
+        TransportType transportType,
         String model,
         String color,
         String identifier,
@@ -13,4 +14,4 @@ public record TransportDTO(
         Double longitude,
         Double minutePrice,
         Double dayPrice
-) {}
+) { }

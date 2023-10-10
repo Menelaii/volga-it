@@ -1,6 +1,9 @@
 package com.example.volgaitzhezha.services;
 
+import com.example.volgaitzhezha.enums.TransportType;
+import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.models.entities.Transport;
+import com.example.volgaitzhezha.models.pagination.XPage;
 import com.example.volgaitzhezha.repositories.TransportRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -8,16 +11,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class TransportService {
+    private final AccountsService accountsService;
     private final TransportRepository repository;
-
-    public List<Transport> getAllTransports() {
-        return repository.findAll();
-    }
 
     public Transport getById(Long id) {
         return repository.findById(id)
@@ -25,7 +26,11 @@ public class TransportService {
     }
 
     @Transactional
-    public Transport add(Transport transport) {
+    public Transport add(Transport transport, Long ownerId) {
+        if (accountsService.getAuthenticated().isAdmin() && ownerId != null) {
+            transport.setOwner(accountsService.getById(ownerId));
+        }
+
         return repository.save(transport);
     }
 
@@ -34,15 +39,12 @@ public class TransportService {
         Transport existingEntity = repository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
 
-        existingEntity.setCanBeRented(updatedEntity.getCanBeRented());
-        existingEntity.setModel(updatedEntity.getModel());
-        existingEntity.setColor(updatedEntity.getColor());
-        existingEntity.setIdentifier(updatedEntity.getIdentifier());
-        existingEntity.setDescription(updatedEntity.getDescription());
-        existingEntity.setLatitude(updatedEntity.getLatitude());
-        existingEntity.setLongitude(updatedEntity.getLongitude());
-        existingEntity.setMinutePrice(updatedEntity.getMinutePrice());
-        existingEntity.setDayPrice(updatedEntity.getDayPrice());
+        updatedEntity.setId(id);
+        
+        if (!Objects.equals(updatedEntity.getOwner(), existingEntity.getOwner())
+                && !accountsService.getAuthenticated().isAdmin()) {
+            throw new IllegalStateException("Попытка пользователя установить нового владельца");
+        }
 
         return repository.save(existingEntity);
     }
@@ -51,6 +53,20 @@ public class TransportService {
     public void delete(Long id) {
         Transport existingTransport = repository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
+
+        Account authenticated = accountsService.getAuthenticated();
+        if (!authenticated.isAdmin() && !isOwner(authenticated, existingTransport)) {
+            throw new IllegalStateException("Вы не владеете этим транспортом");
+        }
+
         repository.delete(existingTransport);
+    }
+
+    public List<Transport> getAll(XPage page, TransportType transportType) {
+        return repository.findAll(transportType.name(), page.getStart(), page.getCount());
+    }
+
+    private boolean isOwner(Account account, Transport transport) {
+        return Objects.equals(account.getId(), transport.getOwner().getId());
     }
 }

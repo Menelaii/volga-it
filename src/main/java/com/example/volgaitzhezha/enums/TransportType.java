@@ -1,6 +1,6 @@
 package com.example.volgaitzhezha.enums;
 
-public enum TransportModel {
+public enum TransportType {
     ALL,
     CAR,
     BIKE,

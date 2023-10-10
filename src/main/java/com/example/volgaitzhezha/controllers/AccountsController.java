@@ -1,7 +1,7 @@
 package com.example.volgaitzhezha.controllers;
 
-import com.example.volgaitzhezha.models.dtos.AccountDTO;
-import com.example.volgaitzhezha.models.dtos.AccountViewDTO;
+import com.example.volgaitzhezha.models.dtos.AccountRequest;
+import com.example.volgaitzhezha.models.dtos.AccountInfoRequest;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.security.JwtUtil;
 import com.example.volgaitzhezha.services.AccountsService;
@@ -14,6 +14,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+
+import static com.example.volgaitzhezha.utils.Constants.DEFAULT_ROLE;
 
 @RestController
 @RequestMapping("/api/Account")
@@ -28,13 +30,13 @@ public class AccountsController {
     private int tokenExpiresIn;
 
     @GetMapping("/Me")
-    public ResponseEntity<AccountViewDTO> getCurrentAccount() {
-        Account me = accountsService.getCurrentAccount();
-        return ResponseEntity.ok(modelMapper.map(me, AccountViewDTO.class));
+    public ResponseEntity<AccountInfoRequest> getCurrentAccount() {
+        Account me = accountsService.getAuthenticated();
+        return ResponseEntity.ok(modelMapper.map(me, AccountInfoRequest.class));
     }
 
     @PostMapping("/SignIn")
-    public ResponseEntity<String> signIn(@RequestBody AccountDTO request) {
+    public ResponseEntity<String> signIn(@RequestBody AccountRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(request.username(), request.password());
 
@@ -50,8 +52,12 @@ public class AccountsController {
     }
 
     @PostMapping("/SignUp")
-    public ResponseEntity<String> signUp(@RequestBody AccountDTO request) {
-        accountsService.register(modelMapper.map(request, Account.class));
+    public ResponseEntity<String> signUp(@RequestBody AccountRequest request) {
+        accountsService.register(
+                modelMapper.map(request, Account.class),
+                DEFAULT_ROLE
+        );
+
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
@@ -61,7 +67,7 @@ public class AccountsController {
     }
 
     @PutMapping("/Update")
-    public ResponseEntity<String> updateAccount(@RequestBody AccountDTO request) {
+    public ResponseEntity<String> updateAccount(@RequestBody AccountRequest request) {
         Account updated = modelMapper.map(request, Account.class);
         accountsService.updateOwnAccount(updated);
         return ResponseEntity.ok().build();
