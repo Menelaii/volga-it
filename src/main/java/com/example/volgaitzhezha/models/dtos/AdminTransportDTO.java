@@ -2,7 +2,7 @@ package com.example.volgaitzhezha.models.dtos;
 
 import com.example.volgaitzhezha.enums.TransportType;
 
-public record AdminTransportRequest(
+public record AdminTransportDTO(
         Long ownerId,
         Boolean canBeRented,
         TransportType transportType,

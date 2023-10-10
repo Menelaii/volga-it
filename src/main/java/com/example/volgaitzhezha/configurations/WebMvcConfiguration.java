@@ -1,5 +1,6 @@
 package com.example.volgaitzhezha.configurations;
 
+import com.example.volgaitzhezha.enums.converters.RentTypeConverter;
 import com.example.volgaitzhezha.enums.converters.TransportTypeConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -27,5 +28,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(new TransportTypeConverter());
+        registry.addConverter(new RentTypeConverter());
     }
 }

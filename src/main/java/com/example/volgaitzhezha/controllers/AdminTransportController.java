@@ -1,8 +1,8 @@
 package com.example.volgaitzhezha.controllers;
 
 import com.example.volgaitzhezha.enums.TransportType;
-import com.example.volgaitzhezha.models.dtos.AdminTransportRequest;
-import com.example.volgaitzhezha.models.dtos.TransportRequest;
+import com.example.volgaitzhezha.models.dtos.AdminTransportDTO;
+import com.example.volgaitzhezha.models.dtos.TransportDTO;
 import com.example.volgaitzhezha.models.entities.Transport;
 import com.example.volgaitzhezha.models.pagination.XPage;
 import com.example.volgaitzhezha.services.TransportService;
@@ -21,32 +21,32 @@ public class AdminTransportController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<TransportRequest>> getAllAccounts(XPage page,
-                                                                 TransportType transportType
+    public ResponseEntity<List<TransportDTO>> getAllAccounts(XPage page,
+                                                             TransportType transportType
     ) {
-        List<TransportRequest> body = service.getAll(page, transportType)
+        List<TransportDTO> body = service.getAll(page, transportType)
                 .stream()
-                .map(account -> modelMapper.map(account, TransportRequest.class))
+                .map(account -> modelMapper.map(account, TransportDTO.class))
                 .toList();
 
         return ResponseEntity.ok(body);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransportRequest> getTransportById(@PathVariable Long id) {
+    public ResponseEntity<TransportDTO> getTransportById(@PathVariable Long id) {
         Transport transport = service.getById(id);
         return ResponseEntity.ok(convertToDTO(transport));
     }
 
     @PostMapping
-    public ResponseEntity<TransportRequest> addTransport(@RequestBody AdminTransportRequest request) {
+    public ResponseEntity<TransportDTO> addTransport(@RequestBody AdminTransportDTO request) {
         Transport transport = convertToEntity(request);
         return ResponseEntity.ok(convertToDTO(service.add(transport, request.ownerId())));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TransportRequest> updateTransport(@PathVariable Long id,
-                                                            @RequestBody AdminTransportRequest request
+    public ResponseEntity<TransportDTO> updateTransport(@PathVariable Long id,
+                                                        @RequestBody AdminTransportDTO request
     ) {
         Transport transport = convertToEntity(request);
         return ResponseEntity.ok(convertToDTO(service.update(id, transport)));
@@ -58,11 +58,11 @@ public class AdminTransportController {
         return ResponseEntity.ok().build();
     }
 
-    private TransportRequest convertToDTO(Transport transport) {
-        return modelMapper.map(transport, TransportRequest.class);
+    private TransportDTO convertToDTO(Transport transport) {
+        return modelMapper.map(transport, TransportDTO.class);
     }
 
-    private Transport convertToEntity(AdminTransportRequest transportRequest) {
+    private Transport convertToEntity(AdminTransportDTO transportRequest) {
         return modelMapper.map(transportRequest, Transport.class);
     }
 }

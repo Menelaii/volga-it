@@ -1,7 +1,7 @@
 package com.example.volgaitzhezha.controllers;
 
-import com.example.volgaitzhezha.models.dtos.AccountRequest;
-import com.example.volgaitzhezha.models.dtos.AccountInfoRequest;
+import com.example.volgaitzhezha.models.dtos.AccountDTO;
+import com.example.volgaitzhezha.models.dtos.AccountInfoDTO;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.security.JwtUtil;
 import com.example.volgaitzhezha.services.AccountsService;
@@ -30,13 +30,13 @@ public class AccountsController {
     private int tokenExpiresIn;
 
     @GetMapping("/Me")
-    public ResponseEntity<AccountInfoRequest> getCurrentAccount() {
+    public ResponseEntity<AccountInfoDTO> getCurrentAccount() {
         Account me = accountsService.getAuthenticated();
-        return ResponseEntity.ok(modelMapper.map(me, AccountInfoRequest.class));
+        return ResponseEntity.ok(modelMapper.map(me, AccountInfoDTO.class));
     }
 
     @PostMapping("/SignIn")
-    public ResponseEntity<String> signIn(@RequestBody AccountRequest request) {
+    public ResponseEntity<String> signIn(@RequestBody AccountDTO request) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(request.username(), request.password());
 
@@ -52,7 +52,7 @@ public class AccountsController {
     }
 
     @PostMapping("/SignUp")
-    public ResponseEntity<String> signUp(@RequestBody AccountRequest request) {
+    public ResponseEntity<String> signUp(@RequestBody AccountDTO request) {
         accountsService.register(
                 modelMapper.map(request, Account.class),
                 DEFAULT_ROLE
@@ -67,7 +67,7 @@ public class AccountsController {
     }
 
     @PutMapping("/Update")
-    public ResponseEntity<String> updateAccount(@RequestBody AccountRequest request) {
+    public ResponseEntity<String> updateAccount(@RequestBody AccountDTO request) {
         Account updated = modelMapper.map(request, Account.class);
         accountsService.updateOwnAccount(updated);
         return ResponseEntity.ok().build();

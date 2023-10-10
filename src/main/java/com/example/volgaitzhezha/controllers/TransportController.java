@@ -1,6 +1,6 @@
 package com.example.volgaitzhezha.controllers;
 
-import com.example.volgaitzhezha.models.dtos.TransportRequest;
+import com.example.volgaitzhezha.models.dtos.TransportDTO;
 import com.example.volgaitzhezha.models.entities.Transport;
 import com.example.volgaitzhezha.services.TransportService;
 import lombok.RequiredArgsConstructor;
@@ -16,19 +16,19 @@ public class TransportController {
     private final ModelMapper modelMapper;
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransportRequest> getTransportById(@PathVariable Long id) {
+    public ResponseEntity<TransportDTO> getTransportById(@PathVariable Long id) {
         Transport transport = transportService.getById(id);
         return ResponseEntity.ok(convertToDTO(transport));
     }
 
     @PostMapping
-    public ResponseEntity<TransportRequest> addTransport(@RequestBody TransportRequest request) {
+    public ResponseEntity<TransportDTO> addTransport(@RequestBody TransportDTO request) {
         Transport transport = convertToEntity(request);
         return ResponseEntity.ok(convertToDTO(transportService.add(transport, null)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TransportRequest> updateTransport(@PathVariable Long id, @RequestBody TransportRequest request) {
+    public ResponseEntity<TransportDTO> updateTransport(@PathVariable Long id, @RequestBody TransportDTO request) {
         Transport transport = convertToEntity(request);
         return ResponseEntity.ok(convertToDTO(transportService.update(id, transport)));
     }
@@ -39,11 +39,11 @@ public class TransportController {
         return ResponseEntity.ok().build();
     }
 
-    private TransportRequest convertToDTO(Transport transport) {
-        return modelMapper.map(transport, TransportRequest.class);
+    private TransportDTO convertToDTO(Transport transport) {
+        return modelMapper.map(transport, TransportDTO.class);
     }
 
-    private Transport convertToEntity(TransportRequest transportRequest) {
-        return modelMapper.map(transportRequest, Transport.class);
+    private Transport convertToEntity(TransportDTO transportDTO) {
+        return modelMapper.map(transportDTO, Transport.class);
     }
 }

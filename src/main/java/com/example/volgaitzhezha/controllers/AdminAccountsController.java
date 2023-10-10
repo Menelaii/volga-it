@@ -1,7 +1,7 @@
 package com.example.volgaitzhezha.controllers;
 
-import com.example.volgaitzhezha.models.dtos.AccountInfoRequest;
-import com.example.volgaitzhezha.models.dtos.AdminAccountRequest;
+import com.example.volgaitzhezha.models.dtos.AccountInfoDTO;
+import com.example.volgaitzhezha.models.dtos.AdminAccountDTO;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.models.pagination.XPage;
 import com.example.volgaitzhezha.services.AccountsService;
@@ -23,23 +23,23 @@ public class AdminAccountsController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<AccountInfoRequest>> getAllAccounts(XPage page) {
-        List<AccountInfoRequest> body = service.getAccounts(page)
+    public ResponseEntity<List<AccountInfoDTO>> getAllAccounts(XPage page) {
+        List<AccountInfoDTO> body = service.getAccounts(page)
                 .stream()
-                .map(account -> modelMapper.map(account, AccountInfoRequest.class))
+                .map(account -> modelMapper.map(account, AccountInfoDTO.class))
                 .toList();
 
         return ResponseEntity.ok(body);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AccountInfoRequest> getAccountById(@PathVariable("id") Long id) {
+    public ResponseEntity<AccountInfoDTO> getAccountById(@PathVariable("id") Long id) {
         Account account = service.getById(id);
-        return ResponseEntity.ok(modelMapper.map(account, AccountInfoRequest.class));
+        return ResponseEntity.ok(modelMapper.map(account, AccountInfoDTO.class));
     }
 
     @PostMapping
-    public ResponseEntity<Void> createAccount(@RequestBody AdminAccountRequest accountRequest) {
+    public ResponseEntity<Void> createAccount(@RequestBody AdminAccountDTO accountRequest) {
         service.register(
                 modelMapper.map(accountRequest, Account.class),
                 accountRequest.isAdmin() ? ADMIN_ROLE : DEFAULT_ROLE
@@ -50,7 +50,7 @@ public class AdminAccountsController {
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateAccount(@PathVariable("id") Long id,
-                                                @RequestBody AdminAccountRequest accountRequest
+                                                @RequestBody AdminAccountDTO accountRequest
     ) {
         Account updatedAccount = modelMapper.map(accountRequest, Account.class);
         updatedAccount.setRole(accountRequest.isAdmin() ? ADMIN_ROLE : DEFAULT_ROLE);

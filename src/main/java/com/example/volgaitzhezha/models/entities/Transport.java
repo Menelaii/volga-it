@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -29,4 +31,7 @@ public class Transport extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private Account owner;
+
+    @OneToMany(mappedBy = "transport")
+    private List<Rent> rents;
 }
