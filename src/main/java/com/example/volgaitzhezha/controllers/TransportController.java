@@ -16,7 +16,7 @@ public class TransportController {
     private final ModelMapper modelMapper;
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransportDTO> getTransportById(@PathVariable Long id) {
+    public ResponseEntity<TransportDTO> getTransportById(@PathVariable("id") Long id) {
         Transport transport = transportService.getById(id);
         return ResponseEntity.ok(convertToDTO(transport));
     }
@@ -28,13 +28,15 @@ public class TransportController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TransportDTO> updateTransport(@PathVariable Long id, @RequestBody TransportDTO request) {
+    public ResponseEntity<TransportDTO> updateTransport(@PathVariable("id") Long id,
+                                                        @RequestBody TransportDTO request
+    ) {
         Transport transport = convertToEntity(request);
         return ResponseEntity.ok(convertToDTO(transportService.update(id, transport)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTransport(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTransport(@PathVariable("id") Long id) {
         transportService.delete(id);
         return ResponseEntity.ok().build();
     }

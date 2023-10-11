@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 public class Rent extends AbstractEntity {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private Double priceOfUnit;
+    private Double finalPrice;
 
     @Enumerated(EnumType.STRING)
     private RentType rentType;
@@ -31,10 +33,6 @@ public class Rent extends AbstractEntity {
 
     public void startRent() {
         this.startTime = LocalDateTime.now();
-    }
-
-    public void endRent() {
-        this.endTime = LocalDateTime.now();
     }
 
     public boolean isRentEnded() {

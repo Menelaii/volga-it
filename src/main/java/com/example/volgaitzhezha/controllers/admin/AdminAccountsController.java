@@ -1,4 +1,4 @@
-package com.example.volgaitzhezha.controllers;
+package com.example.volgaitzhezha.controllers.admin;
 
 import com.example.volgaitzhezha.models.dtos.AccountInfoDTO;
 import com.example.volgaitzhezha.models.dtos.AdminAccountDTO;

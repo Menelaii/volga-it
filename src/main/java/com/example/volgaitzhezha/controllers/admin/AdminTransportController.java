@@ -1,4 +1,4 @@
-package com.example.volgaitzhezha.controllers;
+package com.example.volgaitzhezha.controllers.admin;
 
 import com.example.volgaitzhezha.enums.TransportType;
 import com.example.volgaitzhezha.models.dtos.AdminTransportDTO;

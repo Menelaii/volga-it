@@ -1,11 +1,9 @@
-package com.example.volgaitzhezha.controllers;
+package com.example.volgaitzhezha.controllers.admin;
 
-import com.example.volgaitzhezha.enums.RentType;
-import com.example.volgaitzhezha.enums.TransportType;
+import com.example.volgaitzhezha.models.dtos.AdminRentDTO;
 import com.example.volgaitzhezha.models.dtos.RentDTO;
-import com.example.volgaitzhezha.models.dtos.TransportDTO;
+import com.example.volgaitzhezha.models.entities.Rent;
 import com.example.volgaitzhezha.services.RentService;
-import com.example.volgaitzhezha.services.TransportService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -14,36 +12,21 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/Rent")
+@RequestMapping("/api/Admin")
 @RequiredArgsConstructor
-public class RentController {
+public class AdminRentController {
     private final RentService service;
-    private final TransportService transportService;
     private final ModelMapper modelMapper;
 
-    @GetMapping("/Transport")
-    public ResponseEntity<List<TransportDTO>> getAllAvailable(Double latitude,
-                                                              Double longitude,
-                                                              Double radius,
-                                                              TransportType type
-    ) {
-        List<TransportDTO> body = transportService.getAllAvailable(latitude, longitude, radius, type)
-                        .stream()
-                        .map(t -> modelMapper.map(t, TransportDTO.class))
-                        .toList();
-
-        return ResponseEntity.ok(body);
-    }
-
-    @GetMapping("/{id}")
+    @GetMapping("/Rent/{id}")
     public ResponseEntity<RentDTO> getById(@PathVariable("id") Long id) {
         RentDTO rentDTO = modelMapper.map(service.getById(id), RentDTO.class);
         return ResponseEntity.ok(rentDTO);
     }
 
-    @GetMapping("/MyHistory")
-    public ResponseEntity<List<RentDTO>> getMyHistory() {
-        List<RentDTO> history = service.getMyHistory()
+    @GetMapping("/UserHistory/{userId}")
+    public ResponseEntity<List<RentDTO>> getUserHistory(@PathVariable("userId") Long userId) {
+        List<RentDTO> history = service.getUserHistory(userId)
                 .stream()
                 .map(rent -> modelMapper.map(rent, RentDTO.class))
                 .toList();
@@ -61,9 +44,10 @@ public class RentController {
         return ResponseEntity.ok(history);
     }
 
-    @PostMapping("/New/{transportId}")
-    public ResponseEntity<Void> startRent(@PathVariable("transportId") Long transportId, RentType rentType) {
-        service.startRent(transportId, rentType);
+    @PostMapping("/Rent")
+    public ResponseEntity<Void> createRent(@RequestBody AdminRentDTO rentDTO) {
+        Rent rent = modelMapper.map(rentDTO, Rent.class);
+        service.save(rent, rentDTO.transportId(), rentDTO.userId());
         return ResponseEntity.ok().build();
     }
 
@@ -75,5 +59,19 @@ public class RentController {
         service.endRent(rentId, latitude, longitude);
         return ResponseEntity.ok().build();
     }
-}
 
+    @PutMapping("/Rent/{id}")
+    public ResponseEntity<Void> updateRent(@PathVariable("id") Long id,
+                                           @RequestBody AdminRentDTO rentDTO
+    ) {
+        Rent rent = modelMapper.map(rentDTO, Rent.class);
+        service.update(id, rent, rentDTO.transportId(), rentDTO.userId());
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRent(@PathVariable("id") Long id) {
+        service.delete(id);
+        return ResponseEntity.ok().build();
+    }
+}
