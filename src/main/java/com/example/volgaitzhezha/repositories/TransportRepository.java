@@ -2,6 +2,7 @@ package com.example.volgaitzhezha.repositories;
 
 import com.example.volgaitzhezha.models.entities.Transport;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface TransportRepository extends JpaRepository<Transport, Long> {
-    @Query(value = "SELECT * FROM transport WHERE transportType = :transportType" +
+    @Query(value = "SELECT * FROM Transport WHERE transportType = :transportType" +
             "OFFSET :start LIMIT :count", nativeQuery = true)
     List<Transport> findAll(
             @Param("transportType") String transportType,
@@ -18,14 +19,11 @@ public interface TransportRepository extends JpaRepository<Transport, Long> {
             @Param("count") Integer count
     );
 
-    //todo
-    @Query(value = "SELECT *, calculate_distance(:latitude, :longitude, latitude, longitude) AS distance" +
-            " FROM transport" +
-            " WHERE canBeRented = true" +
-            " AND (:type = 'ALL' OR transportType = :type)" +
-            " AND distance <= :radius" +
-            " ORDER BY distance",
-            nativeQuery = true)
+    @Query("SELECT t FROM Transport t " +
+            "WHERE t.canBeRented = true " +
+            "AND (:type = 'ALL' OR t.transportType = :type) " +
+            "AND FUNCTION('calculate_distance', :latitude, :longitude, t.latitude, t.longitude) <= :radius " +
+            "ORDER BY FUNCTION('calculate_distance', :latitude, :longitude, t.latitude, t.longitude)")
     List<Transport> getAvailable(
             @Param("latitude") Double latitude,
             @Param("longitude") Double longitude,
@@ -33,11 +31,13 @@ public interface TransportRepository extends JpaRepository<Transport, Long> {
             @Param("type") String type
     );
 
-    @Query(value = "UPDATE transport" +
-            " SET canBeRented = true, latitude = :latitude, longitude = :longitude" +
-            " WHERE id = :id",
-            nativeQuery = true)
-    void endRent(@Param("id") Long id,
-                 @Param("latitude") Double latitude,
-                 @Param("longitude") Double longitude);
+    @Modifying
+    @Query("UPDATE Transport t " +
+            "SET t.canBeRented = true, t.latitude = :latitude, t.longitude = :longitude " +
+            "WHERE t.id = :id")
+    void endRent(
+            @Param("id") Long id,
+            @Param("latitude") Double latitude,
+            @Param("longitude") Double longitude
+    );
 }
