@@ -3,7 +3,7 @@ package com.example.volgaitzhezha.services;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.models.pagination.XPage;
 import com.example.volgaitzhezha.repositories.AccountsRepository;
-import com.example.volgaitzhezha.security.UserDetailsImpl;
+import com.example.volgaitzhezha.security.userDetails.UserDetailsImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

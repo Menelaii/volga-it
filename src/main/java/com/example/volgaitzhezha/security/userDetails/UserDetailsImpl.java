@@ -1,4 +1,4 @@
-package com.example.volgaitzhezha.security;
+package com.example.volgaitzhezha.security.userDetails;
 
 import com.example.volgaitzhezha.models.entities.Account;
 import lombok.Getter;

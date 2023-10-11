@@ -78,4 +78,10 @@ public class TransportService {
     private boolean isOwner(Account account, Transport transport) {
         return Objects.equals(account.getId(), transport.getOwner().getId());
     }
+
+    @Transactional
+    public void endRent(Transport transport, Double latitude, Double longitude) {
+        repository.endRent(transport.getId(), latitude, longitude);
+        repository.save(transport);
+    }
 }

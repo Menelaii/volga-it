@@ -1,7 +1,7 @@
 package com.example.volgaitzhezha.security;
 
-import com.example.volgaitzhezha.security.filters.JwtFilter;
-import com.example.volgaitzhezha.services.UserDetailsServiceImpl;
+import com.example.volgaitzhezha.security.jwt.JwtFilter;
+import com.example.volgaitzhezha.security.userDetails.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -42,12 +42,15 @@ public class SecurityConfiguration {
                 .logout(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/files/**").permitAll()
                         .requestMatchers("/api/Account/Me").authenticated()
                         .requestMatchers("/api/Account/SignOut").authenticated()
                         .requestMatchers("/api/Account/Update").authenticated()
                         .requestMatchers("/api/Admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/Payment/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/Transport/**").authenticated()
+                        .requestMatchers("/api/Rent/MyHistory").authenticated()
+                        .requestMatchers("/api/Rent/TransportHistory").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/Rent/**").authenticated()
                         .requestMatchers("/api/**").permitAll()
                 )
                 .sessionManagement(

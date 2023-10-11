@@ -1,8 +1,7 @@
-package com.example.volgaitzhezha.services;
+package com.example.volgaitzhezha.security.userDetails;
 
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.repositories.AccountsRepository;
-import com.example.volgaitzhezha.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

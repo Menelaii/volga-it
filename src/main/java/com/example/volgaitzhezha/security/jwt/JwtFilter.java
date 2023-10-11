@@ -1,7 +1,6 @@
-package com.example.volgaitzhezha.security.filters;
+package com.example.volgaitzhezha.security.jwt;
 
-import com.example.volgaitzhezha.security.JwtUtil;
-import com.example.volgaitzhezha.services.UserDetailsServiceImpl;
+import com.example.volgaitzhezha.security.userDetails.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

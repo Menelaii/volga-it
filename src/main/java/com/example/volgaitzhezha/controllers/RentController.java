@@ -72,7 +72,7 @@ public class RentController {
                                         Double latitude,
                                         Double longitude
     ) {
-        service.endRent(rentId);
+        service.endRent(rentId, latitude, longitude);
         return ResponseEntity.ok().build();
     }
 }

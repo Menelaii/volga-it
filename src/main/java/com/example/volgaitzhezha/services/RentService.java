@@ -43,7 +43,7 @@ public class RentService {
     }
 
     @Transactional
-    public void endRent(Long id) {
+    public void endRent(Long id, Double latitude, Double longitude) {
         Rent rent = repository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
 
@@ -52,6 +52,7 @@ public class RentService {
         }
 
         rent.endRent();
+        transportService.endRent(rent.getTransport(), latitude, longitude);
 
         repository.save(rent);
     }

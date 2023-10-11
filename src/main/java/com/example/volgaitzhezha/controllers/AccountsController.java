@@ -3,7 +3,7 @@ package com.example.volgaitzhezha.controllers;
 import com.example.volgaitzhezha.models.dtos.AccountDTO;
 import com.example.volgaitzhezha.models.dtos.AccountInfoDTO;
 import com.example.volgaitzhezha.models.entities.Account;
-import com.example.volgaitzhezha.security.JwtUtil;
+import com.example.volgaitzhezha.security.jwt.JwtUtil;
 import com.example.volgaitzhezha.services.AccountsService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

@@ -32,4 +32,12 @@ public interface TransportRepository extends JpaRepository<Transport, Long> {
             @Param("radius") Double radius,
             @Param("type") String type
     );
+
+    @Query(value = "UPDATE transport" +
+            " SET canBeRented = true, latitude = :latitude, longitude = :longitude" +
+            " WHERE id = :id",
+            nativeQuery = true)
+    void endRent(@Param("id") Long id,
+                 @Param("latitude") Double latitude,
+                 @Param("longitude") Double longitude);
 }
