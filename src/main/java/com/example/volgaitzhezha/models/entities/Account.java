@@ -32,4 +32,11 @@ public class Account extends AbstractEntity {
     public boolean isAdmin() {
         return ADMIN_ROLE.equals(role);
     }
+
+    public Account(String username, String password, Double balance, Boolean isLocked) {
+        this.username = username;
+        this.password = password;
+        this.balance = balance;
+        this.isLocked = isLocked;
+    }
 }

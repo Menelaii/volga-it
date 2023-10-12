@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "API для Simbir.GO",
+                title = "Simbir.GO API",
                 version = "1.0",
                 description = "API сгруппирован в user-api и admin-api выбирать через выпадающий список сверху"
         ),

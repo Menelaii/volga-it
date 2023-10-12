@@ -23,3 +23,6 @@ jwt.subject=
 
 cheats.hesoyam.value=250000
 
+admin.username=
+admin.password=
+admin.balance=
