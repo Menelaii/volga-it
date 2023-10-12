@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface AccountsRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByUsername(String username);
 
-    @Query(value = "SELECT * FROM Account" +
+    @Query(value = "SELECT * FROM account" +
             " OFFSET :start LIMIT :count",
             nativeQuery = true)
     List<Account> findAll(
