@@ -1,8 +1,8 @@
 package com.example.volgaitzhezha.services;
 
+import com.example.volgaitzhezha.exceptions.ApiRequestException;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.repositories.AccountsRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +20,11 @@ public class PaymentService {
     public void deposit(Long accountId, Double amount) {
         Account current = service.getAuthenticated();
         if (!current.isAdmin() && (!Objects.equals(current.getId(), accountId))) {
-            throw new IllegalStateException("Пользователь может пополнить баланс только самому себе");
+            throw new ApiRequestException("Пользователь может пополнить баланс только самому себе");
         }
 
         if (!repository.existsById(accountId)) {
-            throw new EntityNotFoundException();
+            throw new ApiRequestException("Аккаунт не существует");
         }
 
         repository.deposit(accountId, amount);

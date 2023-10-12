@@ -1,11 +1,11 @@
 package com.example.volgaitzhezha.services;
 
 import com.example.volgaitzhezha.enums.RentType;
+import com.example.volgaitzhezha.exceptions.ApiRequestException;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.models.entities.Rent;
 import com.example.volgaitzhezha.models.entities.Transport;
 import com.example.volgaitzhezha.repositories.RentRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public class RentService {
     @Transactional
     public void save(Rent rent, Long transportId, Long renterId) {
         if (!accountsService.getAuthenticated().isAdmin()) {
-            throw new IllegalStateException();
+            throw new ApiRequestException("Недостаточно прав");
         }
 
         rent.setRenter(accountsService.getById(renterId));
@@ -41,7 +41,7 @@ public class RentService {
         Transport transport = transportService.getById(transportId);
 
         if (isOwner(account, transport)) {
-            throw new IllegalStateException("Нельзя арендовать свой транспорт");
+            throw new ApiRequestException("Нельзя арендовать свой транспорт");
         }
 
         Rent rent = new Rent(
@@ -60,11 +60,11 @@ public class RentService {
     @Transactional
     public void endRent(Long id, Double latitude, Double longitude) {
         Rent rent = repository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new ApiRequestException("Запись не найдена"));
 
         Account account = accountsService.getAuthenticated();
         if (!account.isAdmin() && !isRenter(account, rent)) {
-            throw new IllegalStateException("Завершить может только человек который создавал эту аренду");
+            throw new ApiRequestException("Завершить может только человек который создавал эту аренду");
         }
 
         transportService.endRent(rent.getTransport(), latitude, longitude);
@@ -83,7 +83,7 @@ public class RentService {
     public List<Rent> getTransportHistory(Long transportId) {
         Transport transport = transportService.getById(transportId);
         if (!isOwnerOrAdmin(accountsService.getAuthenticated(), transport)) {
-            throw new IllegalStateException();
+            throw new ApiRequestException("Доступно только владельцу транспорта");
         }
 
         return repository.findAllByTransportId(transportId);
@@ -95,7 +95,7 @@ public class RentService {
 
     public List<Rent> getUserHistory(Long userId) {
         if (!accountsService.getAuthenticated().isAdmin()) {
-            throw new IllegalStateException();
+            throw new ApiRequestException("Недостаточно прав");
         }
 
         return repository.findAllByRenterId(userId);
@@ -103,11 +103,11 @@ public class RentService {
 
     public Rent getById(Long id) {
         Rent rent = repository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new ApiRequestException("Запись не найдена"));
 
         Account account = accountsService.getAuthenticated();
         if (!account.isAdmin() && !isRenterOrOwner(account, rent)) {
-            throw new IllegalStateException("Доступно только арендатору или владелецу транспорта");
+            throw new ApiRequestException("Доступно только арендатору или владелецу транспорта");
         }
 
         return rent;
@@ -116,11 +116,11 @@ public class RentService {
     @Transactional
     public void delete(Long id) {
         if (!accountsService.getAuthenticated().isAdmin()) {
-            throw new IllegalStateException();
+            throw new ApiRequestException("Недостаточно прав");
         }
 
         if (!repository.existsById(id)) {
-            throw new IllegalStateException();
+            throw new ApiRequestException("Запись не найдена");
         }
 
         repository.deleteById(id);
@@ -129,11 +129,11 @@ public class RentService {
     @Transactional
     public void update(Long id, Rent rent, Long transportId, Long userId) {
         if (!accountsService.getAuthenticated().isAdmin()) {
-            throw new IllegalStateException();
+            throw new ApiRequestException("Недостаточно прав");
         }
 
         if (!repository.existsById(id)) {
-            throw new IllegalStateException();
+            throw new ApiRequestException("Запись не существует");
         }
 
         Account account = accountsService.getById(userId);

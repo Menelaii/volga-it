@@ -1,10 +1,10 @@
 package com.example.volgaitzhezha.services;
 
+import com.example.volgaitzhezha.exceptions.ApiRequestException;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.models.pagination.XPage;
 import com.example.volgaitzhezha.repositories.AccountsRepository;
 import com.example.volgaitzhezha.security.userDetails.UserDetailsImpl;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -52,7 +52,7 @@ public class AccountsService {
         String newUsername = updatedAccount.getUsername();
         if (!newUsername.equals(existingAccount.getUsername()) &&
                 repository.findByUsername(newUsername).isPresent()) {
-            throw new IllegalStateException("Пользователь с таким именем уже существует");
+            throw new ApiRequestException("Пользователь с таким именем уже существует");
         }
 
         updatedAccount.setId(existingAccount.getId());
@@ -64,7 +64,7 @@ public class AccountsService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (!authentication.isAuthenticated()) {
-            throw new IllegalStateException();
+            throw new ApiRequestException("Пользователь не аутентифицирован");
         }
 
         return ((UserDetailsImpl) authentication.getPrincipal()).getAccount();
@@ -76,13 +76,13 @@ public class AccountsService {
 
     public Account getById(Long id) {
         return repository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new ApiRequestException("Аккаунт не найден"));
     }
 
     @Transactional
     public void deleteById(Long id) {
         if (!repository.existsById(id)) {
-            throw new EntityNotFoundException();
+            throw new ApiRequestException("Аккаунт не найден");
         }
 
         repository.deleteById(id);

@@ -1,6 +1,7 @@
 package com.example.volgaitzhezha.services;
 
 import com.example.volgaitzhezha.enums.TransportType;
+import com.example.volgaitzhezha.exceptions.ApiRequestException;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.models.entities.Transport;
 import com.example.volgaitzhezha.models.pagination.XPage;
@@ -22,7 +23,7 @@ public class TransportService {
 
     public Transport getById(Long id) {
         return repository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new ApiRequestException("Транспорт не найден"));
     }
 
     @Transactional
@@ -37,13 +38,13 @@ public class TransportService {
     @Transactional
     public Transport update(Long id, Transport updatedEntity) {
         Transport existingEntity = repository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new ApiRequestException("Транспорт не найден"));
 
         updatedEntity.setId(id);
         
         if (!Objects.equals(updatedEntity.getOwner(), existingEntity.getOwner())
                 && !accountsService.getAuthenticated().isAdmin()) {
-            throw new IllegalStateException("Попытка пользователя установить нового владельца");
+            throw new ApiRequestException("Недостаточно прав чтобы установить нового владельца");
         }
 
         return repository.save(existingEntity);
@@ -56,7 +57,7 @@ public class TransportService {
 
         Account authenticated = accountsService.getAuthenticated();
         if (!authenticated.isAdmin() && !isOwner(authenticated, existingTransport)) {
-            throw new IllegalStateException("Вы не владеете этим транспортом");
+            throw new ApiRequestException("Вы не владеете этим транспортом");
         }
 
         repository.delete(existingTransport);
