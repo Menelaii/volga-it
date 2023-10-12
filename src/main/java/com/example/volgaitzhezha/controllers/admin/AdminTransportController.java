@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/Admin/Account")
+@RequestMapping("/api/Admin/Transport")
 @RequiredArgsConstructor
 public class AdminTransportController {
     private final TransportService service;

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PaymentController {
     private final PaymentService service;
 
-    @Value("cheats.hesoyam.value")
+    @Value("${cheats.hesoyam.value}")
     private Double hesoyamValue;
 
     @PostMapping("/Hesoyam/{id}")

@@ -51,7 +51,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/Rent/MyHistory").authenticated()
                         .requestMatchers("/api/Rent/TransportHistory").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/Rent/**").authenticated()
-                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/v2/api-docs", "/webjars/**").permitAll()
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(
                         (sessionManagement) -> sessionManagement
