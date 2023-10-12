@@ -16,5 +16,5 @@ public class TransportDTO {
     private Double latitude;
     private Double longitude;
     private Double minutePrice;
-    private Double dayPric;
+    private Double dayPrice;
 }

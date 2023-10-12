@@ -7,12 +7,15 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
+import org.springdoc.core.models.GroupedOpenApi;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "Simbir.GO",
+                title = "API для Simbir.GO",
                 version = "1.0",
-                description = "API for Simbir.GO application"
+                description = "API сгруппирован в user-api и admin-api выбирать через выпадающий список сверху"
         ),
         servers = {
                 @Server(
@@ -35,5 +38,22 @@ import io.swagger.v3.oas.annotations.servers.Server;
         in = SecuritySchemeIn.HEADER,
         paramName = "Authorization"
 )
+@Configuration
 public class SwaggerConfiguration {
+        @Bean
+        GroupedOpenApi adminApi() {
+                return GroupedOpenApi.builder()
+                        .group("admin-api")
+                        .pathsToMatch("/api/Admin/**")
+                        .build();
+        }
+
+        @Bean
+        GroupedOpenApi userApi() {
+                return GroupedOpenApi.builder()
+                        .group("user-api")
+                        .pathsToMatch("/api/**")
+                        .pathsToExclude("/api/Admin/**")
+                        .build();
+        }
 }
