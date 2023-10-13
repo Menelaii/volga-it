@@ -6,7 +6,6 @@ import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.models.entities.Transport;
 import com.example.volgaitzhezha.models.pagination.XPage;
 import com.example.volgaitzhezha.repositories.TransportRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +27,11 @@ public class TransportService {
 
     @Transactional
     public Transport add(Transport transport, Long ownerId) {
-        if (accountsService.getAuthenticated().isAdmin() && ownerId != null) {
+        Account currentAccount = accountsService.getAuthenticated();
+
+        if (ownerId == null) {
+            transport.setOwner(currentAccount);
+        } else if (currentAccount.isAdmin()) {
             transport.setOwner(accountsService.getById(ownerId));
         }
 
@@ -40,10 +43,16 @@ public class TransportService {
         Transport existingEntity = repository.findById(id)
                 .orElseThrow(() -> new ApiRequestException("Транспорт не найден"));
 
-        updatedEntity.setId(id);
-        
-        if (!Objects.equals(updatedEntity.getOwner(), existingEntity.getOwner())
+        Account currentAccount = accountsService.getAuthenticated();
+        if (!Objects.equals(existingEntity.getOwner(), currentAccount)
                 && !accountsService.getAuthenticated().isAdmin()) {
+            throw new ApiRequestException("Недостаточно прав");
+        }
+
+        updatedEntity.setId(id);
+
+        if (!Objects.equals(updatedEntity.getOwner(), existingEntity.getOwner())
+                && !currentAccount.isAdmin()) {
             throw new ApiRequestException("Недостаточно прав чтобы установить нового владельца");
         }
 
@@ -53,7 +62,7 @@ public class TransportService {
     @Transactional
     public void delete(Long id) {
         Transport existingTransport = repository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new ApiRequestException("Транспорт не найден"));
 
         Account authenticated = accountsService.getAuthenticated();
         if (!authenticated.isAdmin() && !isOwner(authenticated, existingTransport)) {
@@ -77,7 +86,7 @@ public class TransportService {
     }
 
     private boolean isOwner(Account account, Transport transport) {
-        return Objects.equals(account.getId(), transport.getOwner().getId());
+        return Objects.equals(account, transport.getOwner());
     }
 
     @Transactional

@@ -1,5 +1,6 @@
 package com.example.volgaitzhezha.services;
 
+import com.example.volgaitzhezha.annotations.AdminAction;
 import com.example.volgaitzhezha.exceptions.ApiRequestException;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.models.pagination.XPage;
@@ -70,6 +71,7 @@ public class AccountsService {
         return ((UserDetailsImpl) authentication.getPrincipal()).getAccount();
     }
 
+    @AdminAction
     public List<Account> getAccounts(XPage page) {
         return repository.findAll(page.getStart(), page.getCount());
     }
@@ -79,6 +81,7 @@ public class AccountsService {
                 .orElseThrow(() -> new ApiRequestException("Аккаунт не найден"));
     }
 
+    @AdminAction
     @Transactional
     public void deleteById(Long id) {
         if (!repository.existsById(id)) {

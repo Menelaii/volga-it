@@ -18,8 +18,8 @@ public class PaymentService {
 
     @Transactional
     public void deposit(Long accountId, Double amount) {
-        Account current = service.getAuthenticated();
-        if (!current.isAdmin() && (!Objects.equals(current.getId(), accountId))) {
+        Account currentUser = service.getAuthenticated();
+        if (!isAdminOrOwner(accountId, currentUser)) {
             throw new ApiRequestException("Пользователь может пополнить баланс только самому себе");
         }
 
@@ -28,5 +28,9 @@ public class PaymentService {
         }
 
         repository.deposit(accountId, amount);
+    }
+
+    private boolean isAdminOrOwner(Long accountId, Account current) {
+        return current.isAdmin() || Objects.equals(current.getId(), accountId);
     }
 }

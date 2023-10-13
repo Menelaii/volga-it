@@ -1,5 +1,6 @@
 package com.example.volgaitzhezha.services;
 
+import com.example.volgaitzhezha.annotations.AdminAction;
 import com.example.volgaitzhezha.enums.RentType;
 import com.example.volgaitzhezha.exceptions.ApiRequestException;
 import com.example.volgaitzhezha.models.entities.Account;
@@ -93,11 +94,8 @@ public class RentService {
         return repository.findAllByRenterId(accountsService.getAuthenticated().getId());
     }
 
+    @AdminAction
     public List<Rent> getUserHistory(Long userId) {
-        if (!accountsService.getAuthenticated().isAdmin()) {
-            throw new ApiRequestException("Недостаточно прав");
-        }
-
         return repository.findAllByRenterId(userId);
     }
 
@@ -113,12 +111,9 @@ public class RentService {
         return rent;
     }
 
+    @AdminAction
     @Transactional
     public void delete(Long id) {
-        if (!accountsService.getAuthenticated().isAdmin()) {
-            throw new ApiRequestException("Недостаточно прав");
-        }
-
         if (!repository.existsById(id)) {
             throw new ApiRequestException("Запись не найдена");
         }
@@ -126,12 +121,9 @@ public class RentService {
         repository.deleteById(id);
     }
 
+    @AdminAction
     @Transactional
     public void update(Long id, Rent rent, Long transportId, Long userId) {
-        if (!accountsService.getAuthenticated().isAdmin()) {
-            throw new ApiRequestException("Недостаточно прав");
-        }
-
         if (!repository.existsById(id)) {
             throw new ApiRequestException("Запись не существует");
         }
@@ -155,11 +147,11 @@ public class RentService {
     }
 
     private boolean isRenter(Account account, Rent rent) {
-        return Objects.equals(account.getId(), rent.getRenter().getId());
+        return Objects.equals(account, rent.getRenter());
     }
 
     private boolean isOwner(Account account, Transport transport) {
-        return Objects.equals(transport.getOwner().getId(), account.getId());
+        return Objects.equals(transport.getOwner(), account);
     }
 
     private Double getPriceOfUnit(Transport transport, RentType rentType) {
