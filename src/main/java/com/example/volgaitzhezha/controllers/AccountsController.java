@@ -1,12 +1,13 @@
 package com.example.volgaitzhezha.controllers;
 
+import com.example.volgaitzhezha.mappers.AccountsMapper;
+import com.example.volgaitzhezha.exceptions.ApiRequestException;
 import com.example.volgaitzhezha.models.dtos.AccountDTO;
 import com.example.volgaitzhezha.models.dtos.AccountInfoDTO;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.security.jwt.JwtUtil;
 import com.example.volgaitzhezha.services.AccountsService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,16 +16,14 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
-import static com.example.volgaitzhezha.utils.Constants.DEFAULT_ROLE;
-
 @RestController
 @RequestMapping("/api/Account")
 @RequiredArgsConstructor
 public class AccountsController {
     private final AccountsService accountsService;
-    private final JwtUtil jwtUtil;
-    private final ModelMapper modelMapper;
     private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+    private final AccountsMapper mapper;
 
     @Value("${jwt.tokenExpiresIn}")
     private int tokenExpiresIn;
@@ -32,7 +31,7 @@ public class AccountsController {
     @GetMapping("/Me")
     public ResponseEntity<AccountInfoDTO> getCurrentAccount() {
         Account me = accountsService.getAuthenticated();
-        return ResponseEntity.ok(modelMapper.map(me, AccountInfoDTO.class));
+        return ResponseEntity.ok(mapper.map(me));
     }
 
     @PostMapping("/SignIn")
@@ -43,7 +42,7 @@ public class AccountsController {
         try {
             authenticationManager.authenticate(authenticationToken);
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            throw new ApiRequestException("Неправильные логин или пароль");
         }
 
         String token = jwtUtil.generateToken(request.username(), tokenExpiresIn);
@@ -52,23 +51,19 @@ public class AccountsController {
     }
 
     @PostMapping("/SignUp")
-    public ResponseEntity<String> signUp(@RequestBody AccountDTO request) {
-        accountsService.register(
-                modelMapper.map(request, Account.class),
-                DEFAULT_ROLE
-        );
-
+    public ResponseEntity<Void> signUp(@RequestBody AccountDTO request) {
+        accountsService.register(mapper.map(request));
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
     @PostMapping("/SignOut")
-    public ResponseEntity<String> signOut() {
+    public ResponseEntity<Void> signOut() {
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/Update")
-    public ResponseEntity<String> updateAccount(@RequestBody AccountDTO request) {
-        Account updated = modelMapper.map(request, Account.class);
+    public ResponseEntity<Void> updateAccount(@RequestBody AccountDTO request) {
+        Account updated = mapper.map(request);
         accountsService.updateOwnAccount(updated);
         return ResponseEntity.ok().build();
     }

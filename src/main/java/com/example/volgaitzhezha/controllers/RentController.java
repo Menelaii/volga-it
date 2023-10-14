@@ -2,12 +2,13 @@ package com.example.volgaitzhezha.controllers;
 
 import com.example.volgaitzhezha.enums.RentType;
 import com.example.volgaitzhezha.enums.TransportType;
+import com.example.volgaitzhezha.mappers.RentMapper;
+import com.example.volgaitzhezha.mappers.TransportMapper;
 import com.example.volgaitzhezha.models.dtos.RentDTO;
 import com.example.volgaitzhezha.models.dtos.TransportDTO;
 import com.example.volgaitzhezha.services.RentService;
 import com.example.volgaitzhezha.services.TransportService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +19,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RentController {
     private final RentService service;
+    private final RentMapper mapper;
+    private final TransportMapper transportMapper;
     private final TransportService transportService;
-    private final ModelMapper modelMapper;
 
     @GetMapping("/Transport")
     public ResponseEntity<List<TransportDTO>> getAllAvailable(Double latitude,
@@ -29,7 +31,7 @@ public class RentController {
     ) {
         List<TransportDTO> body = transportService.getAllAvailable(latitude, longitude, radius, type)
                         .stream()
-                        .map(t -> modelMapper.map(t, TransportDTO.class))
+                        .map(transportMapper::map)
                         .toList();
 
         return ResponseEntity.ok(body);
@@ -37,7 +39,7 @@ public class RentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<RentDTO> getById(@PathVariable("id") Long id) {
-        RentDTO rentDTO = modelMapper.map(service.getById(id), RentDTO.class);
+        RentDTO rentDTO = mapper.map(service.getById(id));
         return ResponseEntity.ok(rentDTO);
     }
 
@@ -45,7 +47,7 @@ public class RentController {
     public ResponseEntity<List<RentDTO>> getMyHistory() {
         List<RentDTO> history = service.getMyHistory()
                 .stream()
-                .map(rent -> modelMapper.map(rent, RentDTO.class))
+                .map(mapper::map)
                 .toList();
 
         return ResponseEntity.ok(history);
@@ -55,7 +57,7 @@ public class RentController {
     public ResponseEntity<List<RentDTO>> getTransportHistory(@PathVariable("transportId") Long transportId) {
         List<RentDTO> history = service.getTransportHistory(transportId)
                 .stream()
-                .map(rent -> modelMapper.map(rent, RentDTO.class))
+                .map(mapper::map)
                 .toList();
 
         return ResponseEntity.ok(history);

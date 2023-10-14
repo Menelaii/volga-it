@@ -29,14 +29,15 @@ public class Account extends AbstractEntity {
     @OneToMany(mappedBy = "owner")
     private List<Transport> transport;
 
-    public boolean isAdmin() {
-        return ADMIN_ROLE.equals(role);
-    }
-
-    public Account(String username, String password, Double balance, Boolean isLocked) {
+    public Account(String username, String password, String role, Double balance, Boolean isLocked) {
         this.username = username;
         this.password = password;
+        this.role = role;
         this.balance = balance;
         this.isLocked = isLocked;
+    }
+
+    public boolean isAdmin() {
+        return ADMIN_ROLE.equals(role);
     }
 }

@@ -26,13 +26,12 @@ public class TransportService {
     }
 
     @Transactional
-    public Transport add(Transport transport, Long ownerId) {
+    public Transport add(Transport transport) {
         Account currentAccount = accountsService.getAuthenticated();
-
-        if (ownerId == null) {
+        if (transport.getOwner() == null) {
             transport.setOwner(currentAccount);
         } else if (currentAccount.isAdmin()) {
-            transport.setOwner(accountsService.getById(ownerId));
+            transport.setOwner(accountsService.getById(transport.getOwner().getId()));
         }
 
         return repository.save(transport);

@@ -40,14 +40,12 @@ public class AdminInitializer implements CommandLineRunner {
             Account admin = new Account(
                     username,
                     password,
+                    ADMIN_ROLE,
                     balance,
                     false
             );
 
-            service.register(
-                    admin,
-                    ADMIN_ROLE
-            );
+            service.register(admin);
 
             logger.info("Admin created successfully");
         }

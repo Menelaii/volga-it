@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -23,11 +24,9 @@ public class AccountsService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void register(Account account, String role) {
+    public void register(Account account) {
         String encodedPassword = passwordEncoder.encode(account.getPassword());
         account.setPassword(encodedPassword);
-
-        account.setRole(role);
 
         if (account.getBalance() == null) {
             account.setBalance(0d);
@@ -54,6 +53,11 @@ public class AccountsService {
         if (!newUsername.equals(existingAccount.getUsername()) &&
                 repository.findByUsername(newUsername).isPresent()) {
             throw new ApiRequestException("Пользователь с таким именем уже существует");
+        }
+
+        if (!Objects.equals(existingAccount.getRole(), updatedAccount.getRole())
+                && !getAuthenticated().isAdmin()) {
+            throw new ApiRequestException("Нет прав для изменения роли");
         }
 
         updatedAccount.setId(existingAccount.getId());
