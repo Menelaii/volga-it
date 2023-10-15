@@ -43,6 +43,7 @@ public class SecurityConfiguration {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
+                .exceptionHandling(conf -> conf.accessDeniedHandler(new CustomAccessDeniedHandler()))
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/api/Account/Me").authenticated()
                         .requestMatchers("/api/Account/SignOut").authenticated()

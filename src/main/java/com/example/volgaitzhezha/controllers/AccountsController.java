@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -58,6 +59,10 @@ public class AccountsController {
 
     @PostMapping("/SignOut")
     public ResponseEntity<Void> signOut() {
+        if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+            throw new ApiRequestException("Пользователь не аутентифицирован");
+        }
+
         return ResponseEntity.ok().build();
     }
 
