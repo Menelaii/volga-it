@@ -20,11 +20,11 @@ public interface TransportRepository extends JpaRepository<Transport, Long> {
             @Param("count") Integer count
     );
 
-    @Query("SELECT t FROM Transport t " +
-            "WHERE t.canBeRented = true " +
-            "AND (:type = 'ALL' OR t.transportType = :type) " +
-            "AND FUNCTION('calculate_distance', :latitude, :longitude, t.latitude, t.longitude) <= :radius " +
-            "ORDER BY FUNCTION('calculate_distance', :latitude, :longitude, t.latitude, t.longitude)")
+    @Query("SELECT t FROM Transport t" +
+            " WHERE t.canBeRented = true" +
+            " AND (:type = 'ALL' OR t.transportType = :type)" +
+            " AND FUNCTION('calculate_distance', :latitude, :longitude, t.latitude, t.longitude) <= :radius" +
+            " ORDER BY FUNCTION('calculate_distance', :latitude, :longitude, t.latitude, t.longitude)")
     List<Transport> getAvailable(
             @Param("latitude") Double latitude,
             @Param("longitude") Double longitude,
