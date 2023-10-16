@@ -3,6 +3,8 @@ package com.example.volgaitzhezha.services;
 import com.example.volgaitzhezha.exceptions.ApiRequestException;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.repositories.AccountsRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,9 @@ import java.util.Objects;
 public class PaymentService {
     private final AccountsService service;
     private final AccountsRepository repository;
+
+    @PersistenceContext
+    private final EntityManager entityManager;
 
     @Transactional
     public void deposit(Long accountId, Double amount) {
@@ -30,18 +35,19 @@ public class PaymentService {
         repository.deposit(accountId, amount);
     }
 
-    @Transactional
-    public void processPayment(Long payerId, Long payeeId, Double amount) {
-        Account payer = service.getById(payerId);
-        Account payee = service.getById(payeeId);
-        processPayment(payer, payee, amount);
-    }
-
     /**
-     * Отрицательный баланс допускается
+     * Отрицательный баланс допускается.
      */
     @Transactional
     public void processPayment(Account payer, Account payee, Double amount) {
+        if (!entityManager.contains(payer)) {
+            payer = service.getById(payer.getId());
+        }
+
+        if (!entityManager.contains(payee)) {
+            payee = service.getById(payee.getId());
+        }
+
         payer.setBalance(payer.getBalance() - amount);
         payee.setBalance(payee.getBalance() + amount);
     }

@@ -22,7 +22,7 @@ public enum RentType {
     }
 
     @JsonCreator
-    public RentType fromValue(String value) {
+    public static RentType fromValue(String value) {
         for (RentType type : values()) {
             if (Objects.equals(type.value, value.toUpperCase())) {
                 return type;

@@ -137,9 +137,8 @@ public class RentService {
     @AdminOnly
     @Transactional
     public void update(Long id, Rent updatedEntity, Long transportId, Long userId) {
-        if (!repository.existsById(id)) {
-            throw new ApiRequestException("Запись не существует");
-        }
+        Rent existingEntity = repository.findById(id)
+                .orElseThrow(() -> new ApiRequestException("Запись не существует"));
 
         Account account = accountsService.getById(userId);
         Transport transport = transportService.getById(transportId);
@@ -147,6 +146,18 @@ public class RentService {
         updatedEntity.setId(id);
         updatedEntity.setRenter(account);
         updatedEntity.setTransport(transport);
+
+        if (Objects.equals(!existingEntity.isRentEnded(), updatedEntity.isRentEnded())) {
+            if (Objects.isNull(updatedEntity.getFinalPrice())) {
+                throw new ApiRequestException("Необходимо указать итоговую цену");
+            }
+
+            paymentService.processPayment(
+                    updatedEntity.getRenter(),
+                    updatedEntity.getTransport().getOwner(),
+                    updatedEntity.getFinalPrice()
+            );
+        }
 
         repository.save(updatedEntity);
     }
