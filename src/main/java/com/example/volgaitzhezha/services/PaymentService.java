@@ -30,6 +30,22 @@ public class PaymentService {
         repository.deposit(accountId, amount);
     }
 
+    @Transactional
+    public void processPayment(Long payerId, Long payeeId, Double amount) {
+        Account payer = service.getById(payerId);
+        Account payee = service.getById(payeeId);
+        processPayment(payer, payee, amount);
+    }
+
+    /**
+     * Отрицательный баланс допускается
+     */
+    @Transactional
+    public void processPayment(Account payer, Account payee, Double amount) {
+        payer.setBalance(payer.getBalance() - amount);
+        payee.setBalance(payee.getBalance() + amount);
+    }
+
     private boolean isAdminOrOwner(Long accountId, Account current) {
         return current.isAdmin() || Objects.equals(current.getId(), accountId);
     }

@@ -23,6 +23,7 @@ public class RentService {
     private final RentRepository repository;
     private final AccountsService accountsService;
     private final TransportService transportService;
+    private final PaymentService paymentService;
 
     @Transactional
     public void save(Rent rent, Long transportId, Long renterId) {
@@ -44,6 +45,16 @@ public class RentService {
         if (isOwner(account, transport)) {
             throw new ApiRequestException("Нельзя арендовать свой транспорт");
         }
+
+        if (!transport.getCanBeRented()) {
+            throw new ApiRequestException("Этот транспорт сейчас недоступен");
+        }
+
+        if (account.getBalance() <= 0) {
+            throw new ApiRequestException("Недостаточно средств");
+        }
+
+        transport.setCanBeRented(false);
 
         Rent rent = new Rent(
                 LocalDateTime.now(),
@@ -76,7 +87,9 @@ public class RentService {
                 ? daysBetween(rent.getStartTime(), rent.getEndTime())
                 : minutesBetween(rent.getStartTime(), rent.getEndTime());
 
-        rent.setFinalPrice(units * rent.getPriceOfUnit());
+        Double finalPrice = units * rent.getPriceOfUnit();
+        rent.setFinalPrice(finalPrice);
+        paymentService.processPayment(rent.getRenter(), rent.getTransport().getOwner(), finalPrice);
 
         repository.save(rent);
     }

@@ -58,7 +58,6 @@ public class TransportService {
             }
         }
 
-
         updatedEntity.setId(id);
 
         repository.save(updatedEntity);
