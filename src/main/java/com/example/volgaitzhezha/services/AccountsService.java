@@ -6,6 +6,7 @@ import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.models.pagination.XPage;
 import com.example.volgaitzhezha.repositories.AccountsRepository;
 import com.example.volgaitzhezha.security.userDetails.UserDetailsImpl;
+import com.example.volgaitzhezha.security.userDetails.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,9 +23,14 @@ import java.util.Objects;
 public class AccountsService {
     private final AccountsRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Transactional
     public void register(Account account) {
+        if (repository.findByUsername(account.getUsername()).isPresent()) {
+            throw new ApiRequestException("Пользователь с таким именем уже существует");
+        }
+
         String encodedPassword = passwordEncoder.encode(account.getPassword());
         account.setPassword(encodedPassword);
 
@@ -61,8 +67,9 @@ public class AccountsService {
         }
 
         updatedAccount.setId(existingAccount.getId());
+        updatedAccount.setPassword(passwordEncoder.encode(updatedAccount.getPassword()));
 
-        repository.save(existingAccount);
+        repository.save(updatedAccount);
     }
 
     public Account getAuthenticated() {

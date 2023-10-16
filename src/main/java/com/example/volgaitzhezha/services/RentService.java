@@ -123,7 +123,7 @@ public class RentService {
 
     @AdminAction
     @Transactional
-    public void update(Long id, Rent rent, Long transportId, Long userId) {
+    public void update(Long id, Rent updatedEntity, Long transportId, Long userId) {
         if (!repository.existsById(id)) {
             throw new ApiRequestException("Запись не существует");
         }
@@ -131,11 +131,11 @@ public class RentService {
         Account account = accountsService.getById(userId);
         Transport transport = transportService.getById(transportId);
 
-        rent.setId(id);
-        rent.setRenter(account);
-        rent.setTransport(transport);
+        updatedEntity.setId(id);
+        updatedEntity.setRenter(account);
+        updatedEntity.setTransport(transport);
 
-        repository.save(rent);
+        repository.save(updatedEntity);
     }
 
     private boolean isRenterOrOwner(Account account, Rent rent) {

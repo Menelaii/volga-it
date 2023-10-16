@@ -55,7 +55,7 @@ public class TransportService {
             throw new ApiRequestException("Недостаточно прав чтобы установить нового владельца");
         }
 
-        return repository.save(existingEntity);
+        return repository.save(updatedEntity);
     }
 
     @Transactional

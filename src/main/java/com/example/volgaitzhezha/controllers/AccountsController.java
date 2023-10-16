@@ -1,12 +1,14 @@
 package com.example.volgaitzhezha.controllers;
 
-import com.example.volgaitzhezha.mappers.AccountsMapper;
 import com.example.volgaitzhezha.exceptions.ApiRequestException;
+import com.example.volgaitzhezha.mappers.AccountsMapper;
 import com.example.volgaitzhezha.models.dtos.AccountDTO;
 import com.example.volgaitzhezha.models.dtos.AccountInfoDTO;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.security.jwt.JwtUtil;
 import com.example.volgaitzhezha.services.AccountsService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -58,10 +60,15 @@ public class AccountsController {
     }
 
     @PostMapping("/SignOut")
-    public ResponseEntity<Void> signOut() {
+    public ResponseEntity<Void> signOut(HttpServletResponse response) {
         if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
             throw new ApiRequestException("Пользователь не аутентифицирован");
         }
+
+        Cookie cookie = new Cookie("jwtToken", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
     }

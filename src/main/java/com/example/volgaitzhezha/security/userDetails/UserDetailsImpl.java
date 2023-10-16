@@ -10,8 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-@RequiredArgsConstructor
 @Getter
+@RequiredArgsConstructor
 public class UserDetailsImpl implements UserDetails {
     private final Account account;
 
@@ -37,7 +37,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !account.getIsLocked();
+        return true;
     }
 
     @Override

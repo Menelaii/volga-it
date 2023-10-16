@@ -21,7 +21,6 @@ public class Account extends AbstractEntity {
     private String password;
     private String role;
     private Double balance;
-    private Boolean isLocked;
 
     @OneToMany(mappedBy = "renter")
     private List<Rent> rents;
@@ -29,12 +28,11 @@ public class Account extends AbstractEntity {
     @OneToMany(mappedBy = "owner")
     private List<Transport> transport;
 
-    public Account(String username, String password, String role, Double balance, Boolean isLocked) {
+    public Account(String username, String password, String role, Double balance) {
         this.username = username;
         this.password = password;
         this.role = role;
         this.balance = balance;
-        this.isLocked = isLocked;
     }
 
     public boolean isAdmin() {

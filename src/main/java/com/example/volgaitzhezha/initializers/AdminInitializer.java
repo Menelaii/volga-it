@@ -32,7 +32,7 @@ public class AdminInitializer implements CommandLineRunner {
     private Double balance;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         try {
             UserDetails admin = userDetailsService.loadUserByUsername(username);
             logger.info("Admin " + admin.getUsername() + " already created, skipping");
@@ -41,8 +41,7 @@ public class AdminInitializer implements CommandLineRunner {
                     username,
                     password,
                     ADMIN_ROLE,
-                    balance,
-                    false
+                    balance
             );
 
             service.register(admin);

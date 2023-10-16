@@ -2,7 +2,6 @@ package com.example.volgaitzhezha.security;
 
 import com.example.volgaitzhezha.security.jwt.JwtFilter;
 import com.example.volgaitzhezha.security.userDetails.UserDetailsServiceImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +30,6 @@ import java.util.List;
 public class SecurityConfiguration {
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtFilter jwtFilter;
-    private final ObjectMapper objectMapper;
 
     @Value("${clientURL}")
     private String clientDomain;

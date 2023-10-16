@@ -1,6 +1,7 @@
 package com.example.volgaitzhezha.enums.converters;
 
 import com.example.volgaitzhezha.enums.TransportType;
+import com.example.volgaitzhezha.exceptions.ApiRequestException;
 import org.springframework.core.convert.converter.Converter;
 
 public class TransportTypeConverter implements Converter<String, TransportType> {
@@ -10,7 +11,7 @@ public class TransportTypeConverter implements Converter<String, TransportType> 
         try {
             return TransportType.valueOf(source.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid transport type: " + source);
+            throw new ApiRequestException("Invalid transport type: " + source);
         }
     }
 }

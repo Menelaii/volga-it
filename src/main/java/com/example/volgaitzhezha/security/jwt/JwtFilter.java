@@ -6,9 +6,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,6 +21,8 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
+    private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
+
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl service;
 
@@ -34,13 +39,17 @@ public class JwtFilter extends OncePerRequestFilter {
             Optional<String> username = jwtUtil.validateTokenAndRetrieveClaim(token);
 
             if (username.isPresent()) {
-                UserDetails userDetails = service.loadUserByUsername(username.get());
+                try {
+                    UserDetails userDetails = service.loadUserByUsername(username.get());
 
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(),
-                                userDetails.getAuthorities());
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(),
+                                    userDetails.getAuthorities());
 
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                } catch (UsernameNotFoundException e) {
+                    logger.error(e.getMessage());
+                }
             }
         }
 
