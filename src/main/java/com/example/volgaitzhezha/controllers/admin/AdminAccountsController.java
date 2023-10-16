@@ -7,6 +7,7 @@ import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.models.pagination.XPage;
 import com.example.volgaitzhezha.services.AccountsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,8 +39,7 @@ public class AdminAccountsController {
     @PostMapping
     public ResponseEntity<Void> createAccount(@RequestBody AdminAccountDTO request) {
         service.register(mapper.map(request));
-
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -55,6 +55,6 @@ public class AdminAccountsController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteAccount(@PathVariable("id") Long id) {
         service.deleteById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

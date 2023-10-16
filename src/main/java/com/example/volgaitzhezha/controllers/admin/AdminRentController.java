@@ -6,6 +6,7 @@ import com.example.volgaitzhezha.models.dtos.RentDTO;
 import com.example.volgaitzhezha.models.entities.Rent;
 import com.example.volgaitzhezha.services.RentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,7 +49,7 @@ public class AdminRentController {
     public ResponseEntity<Void> createRent(@RequestBody AdminRentDTO rentDTO) {
         Rent rent = mapper.map(rentDTO);
         service.save(rent, rentDTO.transportId(), rentDTO.userId());
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
     @PostMapping("/End/{rentId}")
@@ -72,6 +73,6 @@ public class AdminRentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRent(@PathVariable("id") Long id) {
         service.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

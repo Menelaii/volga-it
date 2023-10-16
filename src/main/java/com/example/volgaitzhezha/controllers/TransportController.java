@@ -5,6 +5,7 @@ import com.example.volgaitzhezha.models.dtos.TransportDTO;
 import com.example.volgaitzhezha.models.entities.Transport;
 import com.example.volgaitzhezha.services.TransportService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,20 +25,22 @@ public class TransportController {
     @PostMapping
     public ResponseEntity<TransportDTO> addTransport(@RequestBody TransportDTO request) {
         Transport transport = mapper.map(request);
-        return ResponseEntity.ok(mapper.map(transportService.add(transport)));
+        transportService.add(transport);
+        return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TransportDTO> updateTransport(@PathVariable("id") Long id,
+    public ResponseEntity<Void> updateTransport(@PathVariable("id") Long id,
                                                         @RequestBody TransportDTO request
     ) {
         Transport transport = mapper.map(request);
-        return ResponseEntity.ok(mapper.map(transportService.update(id, transport)));
+        transportService.update(id, transport);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTransport(@PathVariable("id") Long id) {
         transportService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

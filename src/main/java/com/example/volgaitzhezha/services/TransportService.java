@@ -26,7 +26,7 @@ public class TransportService {
     }
 
     @Transactional
-    public Transport add(Transport transport) {
+    public void add(Transport transport) {
         Account currentAccount = accountsService.getAuthenticated();
         if (transport.getOwner() == null) {
             transport.setOwner(currentAccount);
@@ -34,11 +34,11 @@ public class TransportService {
             transport.setOwner(accountsService.getById(transport.getOwner().getId()));
         }
 
-        return repository.save(transport);
+        repository.save(transport);
     }
 
     @Transactional
-    public Transport update(Long id, Transport updatedEntity) {
+    public void update(Long id, Transport updatedEntity) {
         Transport existingEntity = repository.findById(id)
                 .orElseThrow(() -> new ApiRequestException("Транспорт не найден"));
 
@@ -55,7 +55,7 @@ public class TransportService {
             throw new ApiRequestException("Недостаточно прав чтобы установить нового владельца");
         }
 
-        return repository.save(updatedEntity);
+        repository.save(updatedEntity);
     }
 
     @Transactional
