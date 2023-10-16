@@ -1,6 +1,6 @@
 package com.example.volgaitzhezha.services;
 
-import com.example.volgaitzhezha.annotations.AdminAction;
+import com.example.volgaitzhezha.annotations.AdminOnly;
 import com.example.volgaitzhezha.enums.RentType;
 import com.example.volgaitzhezha.exceptions.ApiRequestException;
 import com.example.volgaitzhezha.models.entities.Account;
@@ -94,7 +94,7 @@ public class RentService {
         return repository.findAllByRenterId(accountsService.getAuthenticated().getId());
     }
 
-    @AdminAction
+    @AdminOnly
     public List<Rent> getUserHistory(Long userId) {
         return repository.findAllByRenterId(userId);
     }
@@ -111,7 +111,7 @@ public class RentService {
         return rent;
     }
 
-    @AdminAction
+    @AdminOnly
     @Transactional
     public void delete(Long id) {
         if (!repository.existsById(id)) {
@@ -121,7 +121,7 @@ public class RentService {
         repository.deleteById(id);
     }
 
-    @AdminAction
+    @AdminOnly
     @Transactional
     public void update(Long id, Rent updatedEntity, Long transportId, Long userId) {
         if (!repository.existsById(id)) {

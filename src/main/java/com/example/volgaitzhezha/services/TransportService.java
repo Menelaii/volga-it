@@ -43,17 +43,23 @@ public class TransportService {
                 .orElseThrow(() -> new ApiRequestException("Транспорт не найден"));
 
         Account currentAccount = accountsService.getAuthenticated();
-        if (!Objects.equals(existingEntity.getOwner(), currentAccount)
-                && !accountsService.getAuthenticated().isAdmin()) {
-            throw new ApiRequestException("Недостаточно прав");
+        if (!currentAccount.isAdmin()) {
+
+            if (updatedEntity.getOwner() == null) {
+                updatedEntity.setOwner(existingEntity.getOwner());
+            }
+
+            if (!Objects.equals(existingEntity.getOwner(), currentAccount)) {
+                throw new ApiRequestException("Недостаточно прав");
+            }
+
+            if (!Objects.equals(updatedEntity.getOwner(), existingEntity.getOwner())) {
+                throw new ApiRequestException("Недостаточно прав чтобы установить нового владельца");
+            }
         }
+
 
         updatedEntity.setId(id);
-
-        if (!Objects.equals(updatedEntity.getOwner(), existingEntity.getOwner())
-                && !currentAccount.isAdmin()) {
-            throw new ApiRequestException("Недостаточно прав чтобы установить нового владельца");
-        }
 
         repository.save(updatedEntity);
     }

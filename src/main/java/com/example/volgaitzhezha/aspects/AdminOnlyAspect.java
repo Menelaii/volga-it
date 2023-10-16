@@ -8,11 +8,11 @@ import org.aspectj.lang.annotation.Before;
 
 @Aspect
 @RequiredArgsConstructor
-public class AuthorizationAspect {
+public class AdminOnlyAspect {
     private final AccountsService accountsService;
 
     @Before("execution(* com.example.volgaitzhezha.services.*.*(..))" +
-            " && @annotation(com.example.volgaitzhezha.annotations.AdminAction)")
+            " && @annotation(com.example.volgaitzhezha.annotations.AdminOnly)")
     public void AdminActionAdvice() {
         if (!accountsService.getAuthenticated().isAdmin()) {
             throw new ApiRequestException("Недостаточно прав");
