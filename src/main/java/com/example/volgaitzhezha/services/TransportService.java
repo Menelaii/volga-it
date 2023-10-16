@@ -28,6 +28,9 @@ public class TransportService {
     @Transactional
     public void add(Transport transport) {
         Account currentAccount = accountsService.getAuthenticated();
+
+        throwIfInvalidPrices(transport);
+
         if (transport.getOwner() == null) {
             transport.setOwner(currentAccount);
         } else if (currentAccount.isAdmin()) {
@@ -57,6 +60,8 @@ public class TransportService {
                 throw new ApiRequestException("Недостаточно прав чтобы установить нового владельца");
             }
         }
+
+        throwIfInvalidPrices(updatedEntity);
 
         updatedEntity.setId(id);
 
@@ -89,13 +94,20 @@ public class TransportService {
         );
     }
 
-    private boolean isOwner(Account account, Transport transport) {
-        return Objects.equals(account, transport.getOwner());
-    }
-
     @Transactional
     public void endRent(Transport transport, Double latitude, Double longitude) {
         repository.endRent(transport.getId(), latitude, longitude);
         repository.save(transport);
+    }
+
+    private boolean isOwner(Account account, Transport transport) {
+        return Objects.equals(account, transport.getOwner());
+    }
+
+    private void throwIfInvalidPrices(Transport entity) {
+        if (entity.getCanBeRented() && (Objects.isNull(entity.getDayPrice())
+                || Objects.isNull(entity.getMinutePrice()))) {
+            throw new ApiRequestException("Транспорт доступный для аренды должен иметь цены на аренду");
+        }
     }
 }

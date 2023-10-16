@@ -12,7 +12,8 @@ import java.util.List;
 @Repository
 public interface TransportRepository extends JpaRepository<Transport, Long> {
     @Query(value = "SELECT * FROM transport WHERE transport_type = :transportType" +
-            "OFFSET :start LIMIT :count", nativeQuery = true)
+            " OR :transportType = 'ALL'" +
+            " OFFSET :start LIMIT :count", nativeQuery = true)
     List<Transport> findAll(
             @Param("transportType") String transportType,
             @Param("start") Integer start,
