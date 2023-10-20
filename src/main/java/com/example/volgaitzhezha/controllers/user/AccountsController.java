@@ -1,9 +1,9 @@
-package com.example.volgaitzhezha.controllers;
+package com.example.volgaitzhezha.controllers.user;
 
 import com.example.volgaitzhezha.exceptions.ApiRequestException;
 import com.example.volgaitzhezha.mappers.AccountsMapper;
-import com.example.volgaitzhezha.models.dtos.AccountDTO;
-import com.example.volgaitzhezha.models.dtos.AccountInfoDTO;
+import com.example.volgaitzhezha.models.dtos.accounts.AuthRequestDTO;
+import com.example.volgaitzhezha.models.dtos.accounts.AccountDTO;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.security.jwt.JwtUtil;
 import com.example.volgaitzhezha.services.AccountsService;
@@ -32,13 +32,13 @@ public class AccountsController {
     private int tokenExpiresIn;
 
     @GetMapping("/Me")
-    public ResponseEntity<AccountInfoDTO> getCurrentAccount() {
+    public ResponseEntity<AccountDTO> getCurrentAccount() {
         Account me = accountsService.getAuthenticated();
         return ResponseEntity.ok(mapper.map(me));
     }
 
     @PostMapping("/SignIn")
-    public ResponseEntity<String> signIn(@RequestBody AccountDTO request) {
+    public ResponseEntity<String> signIn(@RequestBody AuthRequestDTO request) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(request.username(), request.password());
 
@@ -54,7 +54,7 @@ public class AccountsController {
     }
 
     @PostMapping("/SignUp")
-    public ResponseEntity<Void> signUp(@RequestBody AccountDTO request) {
+    public ResponseEntity<Void> signUp(@RequestBody AuthRequestDTO request) {
         accountsService.register(mapper.map(request));
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
@@ -65,6 +65,7 @@ public class AccountsController {
             throw new ApiRequestException("Пользователь не аутентифицирован");
         }
 
+        //todo
         Cookie cookie = new Cookie("jwtToken", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
@@ -74,7 +75,7 @@ public class AccountsController {
     }
 
     @PutMapping("/Update")
-    public ResponseEntity<Void> updateAccount(@RequestBody AccountDTO request) {
+    public ResponseEntity<Void> updateAccount(@RequestBody AuthRequestDTO request) {
         Account updated = mapper.map(request);
         accountsService.updateOwnAccount(updated);
         return ResponseEntity.ok().build();

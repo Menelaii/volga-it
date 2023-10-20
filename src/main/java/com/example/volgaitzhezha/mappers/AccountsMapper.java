@@ -1,8 +1,8 @@
 package com.example.volgaitzhezha.mappers;
 
-import com.example.volgaitzhezha.models.dtos.AccountDTO;
-import com.example.volgaitzhezha.models.dtos.AccountInfoDTO;
-import com.example.volgaitzhezha.models.dtos.AdminAccountDTO;
+import com.example.volgaitzhezha.models.dtos.accounts.AuthRequestDTO;
+import com.example.volgaitzhezha.models.dtos.accounts.AccountDTO;
+import com.example.volgaitzhezha.models.dtos.accounts.CreateAccountAdminRequestDTO;
 import com.example.volgaitzhezha.models.entities.Account;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -16,19 +16,19 @@ import static com.example.volgaitzhezha.utils.Constants.DEFAULT_ROLE;
 public class AccountsMapper {
     private final ModelMapper modelMapper;
 
-    public AccountInfoDTO map(Account account) {
-        AccountInfoDTO dto = modelMapper.map(account, AccountInfoDTO.class);
+    public AccountDTO map(Account account) {
+        AccountDTO dto = modelMapper.map(account, AccountDTO.class);
         dto.setIsAdmin(account.isAdmin());
         return dto;
     }
 
-    public Account map(AccountDTO dto) {
+    public Account map(AuthRequestDTO dto) {
         Account account = modelMapper.map(dto, Account.class);
         account.setRole(DEFAULT_ROLE);
         return account;
     }
 
-    public Account map(AdminAccountDTO dto) {
+    public Account map(CreateAccountAdminRequestDTO dto) {
         Account account = modelMapper.map(dto, Account.class);
         account.setRole(dto.isAdmin() ? ADMIN_ROLE : DEFAULT_ROLE);
         return account;

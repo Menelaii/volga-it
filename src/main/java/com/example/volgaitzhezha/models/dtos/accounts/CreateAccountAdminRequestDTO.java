@@ -1,6 +1,6 @@
-package com.example.volgaitzhezha.models.dtos;
+package com.example.volgaitzhezha.models.dtos.accounts;
 
-public record AdminAccountDTO(
+public record CreateAccountAdminRequestDTO(
         String username,
         String password,
         Boolean isAdmin,

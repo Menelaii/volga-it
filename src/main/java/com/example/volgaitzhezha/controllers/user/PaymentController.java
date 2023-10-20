@@ -1,4 +1,4 @@
-package com.example.volgaitzhezha.controllers;
+package com.example.volgaitzhezha.controllers.user;
 
 import com.example.volgaitzhezha.services.PaymentService;
 import lombok.RequiredArgsConstructor;

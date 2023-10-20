@@ -1,7 +1,8 @@
-package com.example.volgaitzhezha.controllers;
+package com.example.volgaitzhezha.controllers.user;
 
 import com.example.volgaitzhezha.mappers.TransportMapper;
-import com.example.volgaitzhezha.models.dtos.TransportDTO;
+import com.example.volgaitzhezha.models.dtos.transport.CreateTransportRequestDTO;
+import com.example.volgaitzhezha.models.dtos.transport.TransportDTO;
 import com.example.volgaitzhezha.models.entities.Transport;
 import com.example.volgaitzhezha.services.TransportService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class TransportController {
     }
 
     @PostMapping
-    public ResponseEntity<TransportDTO> addTransport(@RequestBody TransportDTO request) {
+    public ResponseEntity<Void> addTransport(@RequestBody CreateTransportRequestDTO request) {
         Transport transport = mapper.map(request);
         transportService.add(transport);
         return new ResponseEntity<>(null, HttpStatus.CREATED);
@@ -31,7 +32,7 @@ public class TransportController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateTransport(@PathVariable("id") Long id,
-                                                        @RequestBody TransportDTO request
+                                                        @RequestBody CreateTransportRequestDTO request
     ) {
         Transport transport = mapper.map(request);
         transportService.update(id, transport);

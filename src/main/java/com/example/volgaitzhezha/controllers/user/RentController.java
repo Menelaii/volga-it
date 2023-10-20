@@ -1,11 +1,13 @@
-package com.example.volgaitzhezha.controllers;
+package com.example.volgaitzhezha.controllers.user;
 
 import com.example.volgaitzhezha.enums.RentType;
 import com.example.volgaitzhezha.enums.TransportType;
 import com.example.volgaitzhezha.mappers.RentMapper;
 import com.example.volgaitzhezha.mappers.TransportMapper;
-import com.example.volgaitzhezha.models.dtos.RentDTO;
-import com.example.volgaitzhezha.models.dtos.TransportDTO;
+import com.example.volgaitzhezha.models.dtos.rent.RentFullDTO;
+import com.example.volgaitzhezha.models.dtos.rent.TransportHistoryRentDTO;
+import com.example.volgaitzhezha.models.dtos.rent.UserHistoryRentDTO;
+import com.example.volgaitzhezha.models.dtos.transport.TransportDTO;
 import com.example.volgaitzhezha.services.RentService;
 import com.example.volgaitzhezha.services.TransportService;
 import lombok.RequiredArgsConstructor;
@@ -38,26 +40,26 @@ public class RentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RentDTO> getById(@PathVariable("id") Long id) {
-        RentDTO rentDTO = mapper.map(service.getById(id));
+    public ResponseEntity<RentFullDTO> getById(@PathVariable("id") Long id) {
+        RentFullDTO rentDTO = mapper.map(service.getById(id));
         return ResponseEntity.ok(rentDTO);
     }
 
     @GetMapping("/MyHistory")
-    public ResponseEntity<List<RentDTO>> getMyHistory() {
-        List<RentDTO> history = service.getMyHistory()
+    public ResponseEntity<List<UserHistoryRentDTO>> getMyHistory() {
+        List<UserHistoryRentDTO> history = service.getMyHistory()
                 .stream()
-                .map(mapper::map)
+                .map(mapper::mapUserHistory)
                 .toList();
 
         return ResponseEntity.ok(history);
     }
 
     @GetMapping("/TransportHistory/{transportId}")
-    public ResponseEntity<List<RentDTO>> getTransportHistory(@PathVariable("transportId") Long transportId) {
-        List<RentDTO> history = service.getTransportHistory(transportId)
+    public ResponseEntity<List<TransportHistoryRentDTO>> getTransportHistory(@PathVariable("transportId") Long transportId) {
+        List<TransportHistoryRentDTO> history = service.getTransportHistory(transportId)
                 .stream()
-                .map(mapper::map)
+                .map(mapper::mapTransportHistory)
                 .toList();
 
         return ResponseEntity.ok(history);

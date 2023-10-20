@@ -1,8 +1,8 @@
 package com.example.volgaitzhezha.controllers.admin;
 
 import com.example.volgaitzhezha.mappers.AccountsMapper;
-import com.example.volgaitzhezha.models.dtos.AccountInfoDTO;
-import com.example.volgaitzhezha.models.dtos.AdminAccountDTO;
+import com.example.volgaitzhezha.models.dtos.accounts.AccountDTO;
+import com.example.volgaitzhezha.models.dtos.accounts.CreateAccountAdminRequestDTO;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.models.pagination.XPage;
 import com.example.volgaitzhezha.services.AccountsService;
@@ -21,8 +21,8 @@ public class AdminAccountsController {
     private final AccountsMapper mapper;
 
     @GetMapping
-    public ResponseEntity<List<AccountInfoDTO>> getAllAccounts(XPage page) {
-        List<AccountInfoDTO> body = service.getAccounts(page)
+    public ResponseEntity<List<AccountDTO>> getAllAccounts(XPage page) {
+        List<AccountDTO> body = service.getAccounts(page)
                 .stream()
                 .map(mapper::map)
                 .toList();
@@ -31,20 +31,20 @@ public class AdminAccountsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AccountInfoDTO> getAccountById(@PathVariable("id") Long id) {
+    public ResponseEntity<AccountDTO> getAccountById(@PathVariable("id") Long id) {
         Account account = service.getById(id);
         return ResponseEntity.ok(mapper.map(account));
     }
 
     @PostMapping
-    public ResponseEntity<Void> createAccount(@RequestBody AdminAccountDTO request) {
+    public ResponseEntity<Void> createAccount(@RequestBody CreateAccountAdminRequestDTO request) {
         service.register(mapper.map(request));
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateAccount(@PathVariable("id") Long id,
-                                                @RequestBody AdminAccountDTO request
+                                                @RequestBody CreateAccountAdminRequestDTO request
     ) {
         Account updatedAccount = mapper.map(request);
         service.update(id, updatedAccount);

@@ -2,8 +2,8 @@ package com.example.volgaitzhezha.controllers.admin;
 
 import com.example.volgaitzhezha.enums.TransportType;
 import com.example.volgaitzhezha.mappers.TransportMapper;
-import com.example.volgaitzhezha.models.dtos.AdminTransportDTO;
-import com.example.volgaitzhezha.models.dtos.TransportDTO;
+import com.example.volgaitzhezha.models.dtos.transport.CreateTransportAdminRequestDTO;
+import com.example.volgaitzhezha.models.dtos.transport.TransportDTO;
 import com.example.volgaitzhezha.models.entities.Transport;
 import com.example.volgaitzhezha.models.pagination.XPage;
 import com.example.volgaitzhezha.services.TransportService;
@@ -22,8 +22,8 @@ public class AdminTransportController {
     private final TransportMapper mapper;
 
     @GetMapping
-    public ResponseEntity<List<TransportDTO>> getAllAccounts(XPage page,
-                                                             TransportType transportType
+    public ResponseEntity<List<TransportDTO>> getAll(XPage page,
+                                                     TransportType transportType
     ) {
         List<TransportDTO> body = service.getAll(page, transportType)
                 .stream()
@@ -40,7 +40,7 @@ public class AdminTransportController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> addTransport(@RequestBody AdminTransportDTO request) {
+    public ResponseEntity<Void> addTransport(@RequestBody CreateTransportAdminRequestDTO request) {
         Transport transport = mapper.map(request);
         service.add(transport);
         return new ResponseEntity<>(null, HttpStatus.CREATED);
@@ -48,7 +48,7 @@ public class AdminTransportController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateTransport(@PathVariable Long id,
-                                                        @RequestBody AdminTransportDTO request
+                                                        @RequestBody CreateTransportAdminRequestDTO request
     ) {
         Transport transport = mapper.map(request);
         service.update(id, transport);

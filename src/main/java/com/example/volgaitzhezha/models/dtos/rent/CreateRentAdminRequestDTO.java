@@ -1,10 +1,10 @@
-package com.example.volgaitzhezha.models.dtos;
+package com.example.volgaitzhezha.models.dtos.rent;
 
 import com.example.volgaitzhezha.enums.RentType;
 
 import java.time.LocalDateTime;
 
-public record AdminRentDTO(
+public record CreateRentAdminRequestDTO(
         Long transportId,
         Long userId,
         LocalDateTime timeStart,
