@@ -4,6 +4,7 @@ import com.example.volgaitzhezha.exceptions.ApiRequestException;
 import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.repositories.AccountsRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class PaymentService {
         }
 
         if (!repository.existsById(accountId)) {
-            throw new ApiRequestException("Аккаунт не существует");
+            throw new EntityNotFoundException();
         }
 
         repository.deposit(accountId, amount);

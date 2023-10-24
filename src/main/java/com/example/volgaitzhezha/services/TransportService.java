@@ -6,6 +6,7 @@ import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.models.entities.Transport;
 import com.example.volgaitzhezha.models.pagination.XPage;
 import com.example.volgaitzhezha.repositories.TransportRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,7 @@ public class TransportService {
 
     public Transport getById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new ApiRequestException("Транспорт не найден"));
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     @Transactional
@@ -43,7 +44,7 @@ public class TransportService {
     @Transactional
     public void update(Long id, Transport updatedEntity) {
         Transport existingEntity = repository.findById(id)
-                .orElseThrow(() -> new ApiRequestException("Транспорт не найден"));
+                .orElseThrow(EntityNotFoundException::new);
 
         Account currentAccount = accountsService.getAuthenticated();
         if (!currentAccount.isAdmin()) {
@@ -71,7 +72,7 @@ public class TransportService {
     @Transactional
     public void delete(Long id) {
         Transport existingTransport = repository.findById(id)
-                .orElseThrow(() -> new ApiRequestException("Транспорт не найден"));
+                .orElseThrow(EntityNotFoundException::new);
 
         Account authenticated = accountsService.getAuthenticated();
         if (!authenticated.isAdmin() && !isOwner(authenticated, existingTransport)) {
