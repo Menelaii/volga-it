@@ -11,11 +11,6 @@ spring.jpa.properties.hibernate.show-sql=true
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.open-in-view=false
 
-spring.servlet.multipart.max-file-size=${MAX_FILE_SIZE:6MB}
-
-clientURL=${CLIENT_URL:http://localhost:4200}
-backendURL=${BACKEND_URL:http://localhost:8080}
-
 jwt.tokenExpiresIn=432000
 jwt.secret=
 jwt.issuer=

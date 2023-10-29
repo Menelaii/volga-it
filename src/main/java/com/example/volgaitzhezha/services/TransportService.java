@@ -64,6 +64,7 @@ public class TransportService {
         throwIfInvalidPrices(updatedEntity);
 
         updatedEntity.setId(id);
+        updatedEntity.setModel(existingEntity.getModel());
 
         repository.save(updatedEntity);
     }
