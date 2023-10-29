@@ -7,6 +7,7 @@ import com.example.volgaitzhezha.models.entities.Account;
 import com.example.volgaitzhezha.models.entities.Rent;
 import com.example.volgaitzhezha.models.entities.Transport;
 import com.example.volgaitzhezha.repositories.RentRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -128,7 +129,7 @@ public class RentService {
     @Transactional
     public void delete(Long id) {
         if (!repository.existsById(id)) {
-            throw new ApiRequestException("Запись не найдена");
+            throw new EntityNotFoundException();
         }
 
         repository.deleteById(id);
@@ -138,7 +139,7 @@ public class RentService {
     @Transactional
     public void update(Long id, Rent updatedEntity, Long transportId, Long userId) {
         Rent existingEntity = repository.findById(id)
-                .orElseThrow(() -> new ApiRequestException("Запись не существует"));
+                .orElseThrow(EntityNotFoundException::new);
 
         Account account = accountsService.getById(userId);
         Transport transport = transportService.getById(transportId);

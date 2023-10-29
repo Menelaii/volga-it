@@ -7,6 +7,7 @@ import com.example.volgaitzhezha.models.pagination.XPage;
 import com.example.volgaitzhezha.repositories.AccountsRepository;
 import com.example.volgaitzhezha.security.userDetails.UserDetailsImpl;
 import com.example.volgaitzhezha.security.userDetails.UserDetailsServiceImpl;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -89,14 +90,14 @@ public class AccountsService {
 
     public Account getById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new ApiRequestException("Аккаунт не найден"));
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     @AdminOnly
     @Transactional
     public void deleteById(Long id) {
         if (!repository.existsById(id)) {
-            throw new ApiRequestException("Аккаунт не найден");
+            throw new EntityNotFoundException();
         }
 
         repository.deleteById(id);
