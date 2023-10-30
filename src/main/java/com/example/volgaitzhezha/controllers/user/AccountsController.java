@@ -2,13 +2,14 @@ package com.example.volgaitzhezha.controllers.user;
 
 import com.example.volgaitzhezha.exceptions.ApiRequestException;
 import com.example.volgaitzhezha.mappers.AccountsMapper;
-import com.example.volgaitzhezha.models.dtos.accounts.AuthRequestDTO;
 import com.example.volgaitzhezha.models.dtos.accounts.AccountDTO;
+import com.example.volgaitzhezha.models.dtos.accounts.AuthRequestDTO;
 import com.example.volgaitzhezha.models.entities.Account;
+import com.example.volgaitzhezha.models.entities.TokenGuard;
 import com.example.volgaitzhezha.security.jwt.JwtUtil;
 import com.example.volgaitzhezha.services.AccountsService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
+import com.example.volgaitzhezha.services.TokenGuardsService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class AccountsController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final AccountsMapper mapper;
+    private final TokenGuardsService tokenGuardsService;
 
     @Value("${jwt.tokenExpiresIn}")
     private int tokenExpiresIn;
@@ -48,7 +50,8 @@ public class AccountsController {
             throw new ApiRequestException("Неправильные логин или пароль");
         }
 
-        String token = jwtUtil.generateToken(request.username(), tokenExpiresIn);
+        TokenGuard tokenGuard = tokenGuardsService.watchToken();
+        String token = jwtUtil.generateToken(tokenGuard.getId(), request.username(), tokenExpiresIn);
 
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
@@ -60,16 +63,14 @@ public class AccountsController {
     }
 
     @PostMapping("/SignOut")
-    public ResponseEntity<Void> signOut(HttpServletResponse response) {
+    public ResponseEntity<Void> signOut(HttpServletRequest request) {
         if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
             throw new ApiRequestException("Пользователь не аутентифицирован");
         }
 
-        //todo
-        Cookie cookie = new Cookie("jwtToken", null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        String token = request.getHeader("Authorization").substring(7);
+        Long id = jwtUtil.retrieveId(token).orElseThrow(() -> new ApiRequestException("Что-то пошло не так!"));
+        tokenGuardsService.setAsInvalidToken(id);
 
         return ResponseEntity.ok().build();
     }

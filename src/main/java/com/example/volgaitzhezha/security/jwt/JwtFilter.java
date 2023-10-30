@@ -50,6 +50,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 } catch (UsernameNotFoundException e) {
                     logger.error(e.getMessage());
                 }
+            } else {
+                logger.error("Ошибка авторизации");
             }
         }
 

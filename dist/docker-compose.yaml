@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: simbirgo
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: droot
+    ports:
+      - "5432:5432"
+
+  spring-boot-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/simbirgo
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: droot
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
