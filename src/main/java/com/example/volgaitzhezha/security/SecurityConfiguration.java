@@ -1,6 +1,7 @@
 package com.example.volgaitzhezha.security;
 
 import com.example.volgaitzhezha.security.jwt.JwtFilter;
+import com.example.volgaitzhezha.security.jwt.TokensFilter;
 import com.example.volgaitzhezha.security.userDetails.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtFilter jwtFilter;
+    private final TokensFilter tokensFilter;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -49,6 +51,7 @@ public class SecurityConfiguration {
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(tokensFilter, JwtFilter.class)
                 .build();
     }
 

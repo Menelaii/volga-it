@@ -1,0 +1,11 @@
+
+
+## Адрес swagger-ui
+http://localhost:8080/swagger-ui/index.html#/
+
+## Администратор по умолчанию
+Данные для входа в аккаунт указываются в application.properties
+
+admin.username=test-admin
+admin.password=12345
+admin.balance=0

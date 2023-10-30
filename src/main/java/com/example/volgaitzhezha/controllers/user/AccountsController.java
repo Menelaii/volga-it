@@ -5,7 +5,6 @@ import com.example.volgaitzhezha.mappers.AccountsMapper;
 import com.example.volgaitzhezha.models.dtos.accounts.AccountDTO;
 import com.example.volgaitzhezha.models.dtos.accounts.AuthRequestDTO;
 import com.example.volgaitzhezha.models.entities.Account;
-import com.example.volgaitzhezha.models.entities.TokenGuard;
 import com.example.volgaitzhezha.security.jwt.JwtUtil;
 import com.example.volgaitzhezha.services.AccountsService;
 import com.example.volgaitzhezha.services.TokenGuardsService;
@@ -50,8 +49,8 @@ public class AccountsController {
             throw new ApiRequestException("Неправильные логин или пароль");
         }
 
-        TokenGuard tokenGuard = tokenGuardsService.watchToken();
-        String token = jwtUtil.generateToken(tokenGuard.getId(), request.username(), tokenExpiresIn);
+        String token = jwtUtil.generateToken(request.username(), tokenExpiresIn);
+        tokenGuardsService.watchToken(token);
 
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
@@ -69,8 +68,7 @@ public class AccountsController {
         }
 
         String token = request.getHeader("Authorization").substring(7);
-        Long id = jwtUtil.retrieveId(token).orElseThrow(() -> new ApiRequestException("Что-то пошло не так!"));
-        tokenGuardsService.setAsInvalidToken(id);
+        tokenGuardsService.disableToken(token);
 
         return ResponseEntity.ok().build();
     }

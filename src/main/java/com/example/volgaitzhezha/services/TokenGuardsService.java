@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -16,23 +14,23 @@ public class TokenGuardsService {
     private final TokensRepository repository;
 
     @Transactional
-    public TokenGuard watchToken() {
+    public void watchToken(String token) {
         TokenGuard tokenGuard = new TokenGuard();
-        tokenGuard.setIsActive(true);
-        return repository.save(tokenGuard);
+        tokenGuard.setToken(token);
+        tokenGuard.setIsTokenEnabled(true);
+        repository.save(tokenGuard);
     }
 
     @Transactional
-    public void setAsInvalidToken(Long id) {
-        if (!repository.existsById(id)) {
-            throw new EntityNotFoundException();
-        }
+    public void disableToken(String token) {
+        TokenGuard tokenGuard = repository.findByToken(token)
+                .orElseThrow(EntityNotFoundException::new);
 
-        repository.setAsInvalid(id);
+        repository.disableToken(tokenGuard.getId());
     }
 
-    public boolean isTokenEnabled(Long id) {
-        Optional<TokenGuard> token = repository.findById(id);
-        return token.isPresent() && token.get().getIsActive() != null && token.get().getIsActive();
+    public boolean isTokenEnabled(String token) {
+        TokenGuard guard = repository.findByToken(token).orElse(null);
+        return guard != null && guard.getIsTokenEnabled() != null && guard.getIsTokenEnabled();
     }
 }
