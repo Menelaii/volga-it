@@ -3,6 +3,7 @@ package com.example.volgaitzhezha.controllers.user;
 import com.example.volgaitzhezha.mappers.TransportMapper;
 import com.example.volgaitzhezha.models.dtos.transport.CreateTransportRequestDTO;
 import com.example.volgaitzhezha.models.dtos.transport.TransportDTO;
+import com.example.volgaitzhezha.models.dtos.transport.UpdateTransportRequestDTO;
 import com.example.volgaitzhezha.models.entities.Transport;
 import com.example.volgaitzhezha.services.TransportService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class TransportController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateTransport(@PathVariable("id") Long id,
-                                                        @RequestBody CreateTransportRequestDTO request
+                                                        @RequestBody UpdateTransportRequestDTO request
     ) {
         Transport transport = mapper.map(request);
         transportService.update(id, transport);

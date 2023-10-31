@@ -60,12 +60,13 @@ public class TransportService {
             if (!Objects.equals(updatedEntity.getOwner(), existingEntity.getOwner())) {
                 throw new ApiRequestException("Недостаточно прав чтобы установить нового владельца");
             }
+
+            updatedEntity.setTransportType(existingEntity.getTransportType());
         }
 
         throwIfInvalidPrices(updatedEntity);
 
         updatedEntity.setId(id);
-        updatedEntity.setModel(existingEntity.getModel());
 
         repository.save(updatedEntity);
     }

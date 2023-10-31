@@ -1,6 +1,9 @@
 package com.example.volgaitzhezha.mappers;
 
-import com.example.volgaitzhezha.models.dtos.rent.*;
+import com.example.volgaitzhezha.models.dtos.rent.CreateRentAdminRequestDTO;
+import com.example.volgaitzhezha.models.dtos.rent.RentFullDTO;
+import com.example.volgaitzhezha.models.dtos.rent.TransportHistoryRentDTO;
+import com.example.volgaitzhezha.models.dtos.rent.UserHistoryRentDTO;
 import com.example.volgaitzhezha.models.entities.Rent;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

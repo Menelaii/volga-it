@@ -48,7 +48,7 @@ public class AdminTransportController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateTransport(@PathVariable Long id,
-                                                        @RequestBody CreateTransportAdminRequestDTO request
+                                                @RequestBody CreateTransportAdminRequestDTO request
     ) {
         Transport transport = mapper.map(request);
         service.update(id, transport);

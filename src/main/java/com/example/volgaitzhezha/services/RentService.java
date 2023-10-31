@@ -27,18 +27,6 @@ public class RentService {
     private final PaymentService paymentService;
 
     @Transactional
-    public void save(Rent rent, Long transportId, Long renterId) {
-        if (!accountsService.getAuthenticated().isAdmin()) {
-            throw new ApiRequestException("Недостаточно прав");
-        }
-
-        rent.setRenter(accountsService.getById(renterId));
-        rent.setTransport(transportService.getById(transportId));
-
-        repository.save(rent);
-    }
-
-    @Transactional
     public void startRent(Long transportId, RentType rentType) {
         Account account = accountsService.getAuthenticated();
         Transport transport = transportService.getById(transportId);
@@ -115,7 +103,7 @@ public class RentService {
 
     public Rent getById(Long id) {
         Rent rent = repository.findById(id)
-                .orElseThrow(() -> new ApiRequestException("Запись не найдена"));
+                .orElseThrow(EntityNotFoundException::new);
 
         Account account = accountsService.getAuthenticated();
         if (!account.isAdmin() && !isRenterOrOwner(account, rent)) {
@@ -123,6 +111,22 @@ public class RentService {
         }
 
         return rent;
+    }
+
+    @AdminOnly
+    @Transactional
+    public void save(Rent rent, Long transportId, Long renterId) {
+        Account renter = accountsService.getById(renterId);
+        Transport rentedTransport = transportService.getById(transportId);
+
+        rent.setRenter(renter);
+        rent.setTransport(rentedTransport);
+
+        if (rent.isRentEnded()) {
+            processPayment(renter, rentedTransport.getOwner(), rent.getFinalPrice());
+        }
+
+        repository.save(rent);
     }
 
     @AdminOnly
@@ -137,27 +141,23 @@ public class RentService {
 
     @AdminOnly
     @Transactional
-    public void update(Long id, Rent updatedEntity, Long transportId, Long userId) {
+    public void update(Long id, Rent updatedEntity, Long transportId, Long renterId) {
         Rent existingEntity = repository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
 
-        Account account = accountsService.getById(userId);
+        Account renter = accountsService.getById(renterId);
         Transport transport = transportService.getById(transportId);
 
         updatedEntity.setId(id);
-        updatedEntity.setRenter(account);
+        updatedEntity.setRenter(renter);
         updatedEntity.setTransport(transport);
 
         if (Objects.equals(!existingEntity.isRentEnded(), updatedEntity.isRentEnded())) {
-            if (Objects.isNull(updatedEntity.getFinalPrice())) {
-                throw new ApiRequestException("Необходимо указать итоговую цену");
-            }
+            Double finalPrice = updatedEntity.getFinalPrice() != null
+                    ? updatedEntity.getFinalPrice()
+                    : existingEntity.getFinalPrice();
 
-            paymentService.processPayment(
-                    updatedEntity.getRenter(),
-                    updatedEntity.getTransport().getOwner(),
-                    updatedEntity.getFinalPrice()
-            );
+            processPayment(renter, transport.getOwner(), finalPrice);
         }
 
         repository.save(updatedEntity);
@@ -191,5 +191,13 @@ public class RentService {
 
     private long minutesBetween(LocalDateTime start, LocalDateTime end) {
         return ChronoUnit.MINUTES.between(start, end);
+    }
+
+    private void processPayment(Account renter, Account transportOwner, Double finalPrice) {
+        if (Objects.isNull(finalPrice)) {
+            throw new ApiRequestException("Необходимо указать итоговую цену");
+        }
+
+        paymentService.processPayment(renter, transportOwner, finalPrice);
     }
 }

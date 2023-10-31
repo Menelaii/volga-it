@@ -3,6 +3,7 @@ package com.example.volgaitzhezha.mappers;
 import com.example.volgaitzhezha.models.dtos.transport.CreateTransportAdminRequestDTO;
 import com.example.volgaitzhezha.models.dtos.transport.CreateTransportRequestDTO;
 import com.example.volgaitzhezha.models.dtos.transport.TransportDTO;
+import com.example.volgaitzhezha.models.dtos.transport.UpdateTransportRequestDTO;
 import com.example.volgaitzhezha.models.entities.Transport;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -15,6 +16,10 @@ public class TransportMapper {
     private final AccountsMapper accountsMapper;
 
     public Transport map(CreateTransportRequestDTO dto) {
+        return modelMapper.map(dto, Transport.class);
+    }
+
+    public Transport map(UpdateTransportRequestDTO dto) {
         return modelMapper.map(dto, Transport.class);
     }
 

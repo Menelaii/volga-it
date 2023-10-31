@@ -15,7 +15,9 @@ import org.springframework.context.annotation.Configuration;
         info = @Info(
                 title = "Simbir.GO API",
                 version = "1.0",
-                description = "API сгруппирован в user-api и admin-api выбирать через выпадающий список сверху"
+                description = "API разделён на две группы: user-api и admin-api." +
+                        " Группы выбираются через выпадающий список в шапке." +
+                        " При переключении между группами API, токен в Swagger UI слетает."
         ),
         servers = {
                 @Server(
